@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from io import IOBase
-
+import logging as log
 import struct
 
 import opcode
@@ -205,7 +205,7 @@ class JavaClass:
         stream.write(u2(len(self.constant_pool) + 1))
 
         for constant in self.constant_pool:
-            print "writing constant " + `constant` + " at " + getPos(stream)
+            log.debug('writing constant ' + `constant` + ' at ' + getPos(stream))
             constant.write(stream)
 
         stream.write(u2(self.access_flags))
@@ -218,19 +218,18 @@ class JavaClass:
 
         stream.write(u2(len(self.fields)))
         for field in self.fields:
-            print "writing field " + `field`  + " at " + getPos(stream)
+            log.debug('writing field ' + `field`  + ' at ' + getPos(stream))
             field.write(stream)
 
         stream.write(u2(len(self.methods)))
         for method in self.methods:
-            print "writing method " + `method` + " at " + getPos(stream)
+            log.debug('writing method ' + `method` + ' at ' + getPos(stream))
             method.write(stream)
 
         
-        print "writing attribute count 0x" + format(len(self.attributes), 'x') + " at " + getPos(stream)
         stream.write(u2(len(self.attributes)))
         for attribute in self.attributes:
-            print "writing class attribute " + `attribute` + " at " + getPos(stream)
+            log.debug('writing class attribute ' + `attribute` + ' at ' + getPos(stream))
             attribute.write(stream)
 
 
@@ -345,7 +344,7 @@ class Code_attribute(object):
 
     def write(self, stream):
 
-        print 'Writing ' + `self` + ' at ' + getPos(stream) + ': ' + `self.attribute_name_index` + ', ' + `self.attribute_length`
+        log.debug('Writing ' + `self` + ' at ' + getPos(stream))
         
         stream.write(u2(self.attribute_name_index))
         stream.write(u4(self.attribute_length))
@@ -375,8 +374,6 @@ class field_info(object):
         self.attributes = attributes
 
     def write(self, stream):
-
-        # print '  writing field access flags ' + format(self.access_flags, 'x') + ' at ' + getPos(stream)
 
         stream.write(u2(self.access_flags))
         stream.write(u2(self.name_index))

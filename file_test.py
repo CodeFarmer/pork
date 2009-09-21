@@ -1,11 +1,14 @@
 #! /usr/bin/env python
 
 from io import FileIO
+import logging as log
 import unittest
 
 from classfile import JavaClass, Code_attribute, fieldDescriptor, methodDescriptor, ACC_PUBLIC, ACC_STATIC, DESC_INT, DESC_VOID
 
 class TestMinimalClass(unittest.TestCase):
+
+    log.basicConfig(level=log.DEBUG)
     
     clazz = JavaClass("org.joellercoaster.Something")
 
