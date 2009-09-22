@@ -83,6 +83,7 @@ addOperation(Op('iflt',            0x9b, 2, -1))
 addOperation(Op('ifne',            0x9a, 2, -1))
 addOperation(Op('ifnonnull',       0xc7, 2, -1))
 addOperation(Op('ifnull',          0xc7, 2, -1))
+addOperation(Op('iinc',            0x84, 2,  0))
 # iload
 addOperation(Op('iload',           0x15, 1,  1)) # wide allowed
 addOperation(Op('iload_0',         0x1a, 0,  1)) # wide allowed
