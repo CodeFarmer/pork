@@ -216,9 +216,81 @@ Op('isub',            0x64, 0, -1)
 Op('iushr',           0x7c, 0, -1)
 Op('ixor',            0x82, 0, -1)
 
-Op('jsr',             0xa8, 2,  1))
-Op('jsr_w',           0xc9, 4,  1))
+Op('jsr',             0xa8, 2,  1)
+Op('jsr_w',           0xc9, 4,  1)
 
+Op('l2d',             0x8a, 0,  0)
+Op('l2f',             0x89, 0,  0)
+Op('l2i',             0x88, 0,  0)
+Op('ladd',            0x61, 0, -1)
+Op('laload',          0x2f, 0, -1)
+Op('land',            0x7f, 0, -1)
+Op('lastore',         0x50, 0, -3)
+Op('lcmp',            0x94, 0, -1)
+Op('lconst_0',        0x09, 0,  1)
+Op('lconst_1',        0x0a, 0,  1)
+Op('ldc',             0x12, 1,  1)
+Op('ldc_w',           0x13, 2,  1)
+Op('ldc2_w',          0x14, 2,  2) # TODO check stack deltas for group 2
+Op('ldiv',            0x6d, 0, -1)
+Op('lload',           0x16, 1,  1)
+Op('lload_0',         0x1e, 0,  1)
+Op('lload_1',         0x1f, 0,  1)
+Op('lload_2',         0x20, 0,  1)
+Op('lload_3',         0x21, 0,  1)
+Op('lmul',            0x69, 0, -1)
+Op('lneg',            0x75, 0,  0)
+# TODO figure out how to implement lookupswitch.
+# Op('lookupswitch', 0xab, None, -1)
+Op('lor',             0x81, 0, -1)
+Op('lrem',            0x71, 0, -1)
+# TODO returns clear stack, ignore their deltas or..?
+Op('lreturn',         0xad, 0, -1)
+Op('lshl',            0x79, 0, -1)
+Op('lshr',            0x7b, 0, -1)
+Op('lstore',          0x37, 1, -1)
+Op('lstore_0',        0x3f, 0, -1)
+Op('lstore_1',        0x40, 0, -1)
+Op('lstore_2',        0x41, 0, -1)
+Op('lstore_3',        0x42, 0, -1)
+Op('lsub',            0x65, 0, -1)
+Op('lushr',           0x7d, 0, -1)
+Op('lxor',            0x83, 0, -1)
+
+Op('monitorenter',    0xc2, 0, -1)
+Op('monitorexit',     0xc3, 0, -1)
+Op('multinewarray',   0xc5, 3,  None) # stack pop count from dimensions?
+
+Op('new',             0xbb, 2,  1)
+Op('newarray',        0xbc, 1,  0)
+Op('nop',             0x00, 0,  0)
+
+Op('pop',             0x57, 0, -1)
+Op('pop2',            0x58, 0, -2) # TODO check deltas for group 2
+Op('putfield',        0xb5, 2, -2)
+Op('putstatic',       0xb3, 2, -1) # TODO check deltas for group 2
+
+Op('ret',             0xa9, 1,  0)
 Op('return',          0xb1, 0,  0) # return void
 
+Op('saload',          0x35, 0, -1)
+Op('sastore',         0x56, 0, -3)
+Op('sipush',          0x11, 2,  1)
+Op('swap',            0x5f, 0,  0) # note lack of swap2
+
+# TODO figure out how to implement tableswitch
+# Op('tableswitch',     0xaa, None, -1)
+
+# TODO figure out how to implement wide
+# Op('wide',            0xc4, None, None)
+
+# arguments to newarray
+T_BOOLEAN =  4
+T_CHAR    =  5
+T_FLOAT   =  6
+T_DOUBLE  =  7
+T_BYTE    =  8
+T_SHORT   =  9
+T_INT     = 10
+T_LONG    = 11
 
