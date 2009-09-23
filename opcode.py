@@ -108,6 +108,36 @@ addOperation(Op('dup2',            0x5c, 0,  2)) #
 addOperation(Op('dup2_x1',         0x5d, 0,  2)) # 
 addOperation(Op('dup2_x2',         0x5e, 0,  2)) #
 
+# TODO revisit all the x2ys and ensure their stack deltas are correct
+# TODO and everything to do with long and double :(
+addOperation(Op('f2d',             0x8d, 0,  0))
+addOperation(Op('f2i',             0x8b, 0,  0))
+addOperation(Op('f2l',             0x8c, 0,  0))
+addOperation(Op('fadd',            0x62, 0, -1))
+addOperation(Op('faload',          0x30, 0, -1))
+addOperation(Op('fastore',         0x51, 0, -3))
+addOperation(Op('fcmpg',           0x96, 0, -1))
+addOperation(Op('fcmpl',           0x95, 0, -1))
+addOperation(Op('fconst_0',        0x0b, 0,  1))
+addOperation(Op('fconst_1',        0x0c, 0,  1))
+addOperation(Op('fconst_2',        0x0d, 0,  1))
+addOperation(Op('fdiv',            0x6e, 0, -1))
+addOperation(Op('fload',           0x17, 1,  1))
+addOperation(Op('fload_0',         0x22, 0,  1))
+addOperation(Op('fload_1',         0x23, 0,  1))
+addOperation(Op('fload_2',         0x24, 0,  1))
+addOperation(Op('fload_3',         0x25, 0,  1))
+addOperation(Op('fmul',            0x6a, 0, -1))
+addOperation(Op('fneg',            0x76, 0,  0))
+addOperation(Op('frem',            0x72, 0, -1))
+addOperation(Op('freturn',         0xae, 0, -1))
+addOperation(Op('fstore',          0x38, 1, -1))
+addOperation(Op('fstore_0',        0x43, 0, -1))
+addOperation(Op('fstore_1',        0x44, 0, -1))
+addOperation(Op('fstore_2',        0x45, 0, -1))
+addOperation(Op('fstore_3',        0x46, 0, -1))
+addOperation(Op('fsub',            0x66, 0, -1))
+
 addOperation(Op('i2b',             0x91, 0,  0))
 addOperation(Op('i2c',             0x92, 0,  0))
 addOperation(Op('i2d',             0x87, 0,  0))
