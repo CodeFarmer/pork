@@ -10,10 +10,14 @@ options {
 
 
 tokens {
-     COLON     = ':'  ;
-     SEMICOLON = ';'  ;
-     NEWLINE   = '\n' ;
-     DOT       = '.'  ;
+     COLON        = ':' ;
+     SEMICOLON    = ';' ;
+     NEWLINE      = '\n';
+     DOT          = '.' ;
+     LEFTBRACKET  = '(' ;
+     RIGHTBRACKET = ')' ;
+     LEFTSQUARE   = '[' ;
+     RIGHTSQUARE  = ']' ;
 }
 
 
@@ -29,15 +33,31 @@ LETTER      : 'a'..'b' | 'A'..'Z' ;
 DIGIT       : '0'..'9' ;
 HEXDIGIT    : DIGIT | 'A'..'E' | 'a'..'e' ;
 
+basicType : 'boolean' | 'char' | 'double' | 'float' | 'int' | 'long' ;
+void      : 'void' ;
+
 labelDef    : label COLON NEWLINE ;
 instruction : offset? opcode argument* comment? NEWLINE;
+directive   : DOT (classDirective | methodDirective | staticMethodDirective ) NEWLINE;
 
-offset      : integer ;
-integer     : (DIGIT)+ | '0x' (HEXDIGIT HEXDIGIT)+ ;
+classDirective  : 'class' className ;
+className       : word (DOT word)*  ;
+typeName : className | basicType ;
+arrayTypeName : typeName LEFTSQUARE RIGHTSQUARE ;
 
-comment     : SEMICOLON .* ;
+methodDirective       : 'method' methodDescriptor ;
+staticMethodDirective : 'staticMethod' methodDescriptor ;
+methodDescriptor      : (typeName | void) word LEFTBRACKET typeDescriptor* RIGHTBRACKET ;
+typeDescriptor : typeName | arrayTypeName ;
 
-argument    : (integer | label) ;
+offset  : integer ;
+integer : (DIGIT)+ | '0x' (HEXDIGIT HEXDIGIT)+ ;
 
-opcode      : LETTER+ ;
-label       : LETTER+ ;
+comment  : SEMICOLON .* ;
+
+argument : (integer | label) ;
+
+opcode   : LETTER+ ;
+word     : (LETTER | '_')+ ;
+label    : word ;
+

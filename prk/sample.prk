@@ -1,6 +1,6 @@
 .class org.joellercoaster.pork.Sample
 
-    .staticmethod main(java.lang.String[])
+    .staticmethod void main(java.lang.String[])
 
         00 nop ;
            nop ; demostrate optional line numbering in source
