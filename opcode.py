@@ -28,11 +28,12 @@ class UnknownOperation(Exception):
 OPERATIONS = {}
 OPCODES = {}
 
-
 def addOperation(op):
 
     assert isinstance(op, Op)
     OPERATIONS[op.name] = op
+
+    assert(not OPCODES.has_key(op.opcode))
     OPCODES[op.opcode]  = op
 
 
@@ -45,6 +46,67 @@ def getOperation(name):
 
     return OPERATIONS[name]
 
+
+addOperation(Op('aaload',          0x32, 0, -1))
+addOperation(Op('aastore',         0x53, 0, -3))
+addOperation(Op('aconst_null',     0x01, 0,  1))
+# aload can't be used to load returnAddress
+addOperation(Op('aload',           0x19, 1,  1))
+addOperation(Op('aload_0',         0x2a, 0,  1))
+addOperation(Op('aload_1',         0x2b, 0,  1))
+addOperation(Op('aload_2',         0x2c, 0,  1))
+addOperation(Op('aload_3',         0x2d, 0,  1))
+addOperation(Op('anewarray',       0xbd, 2,  0))
+addOperation(Op('areturn',         0xb0, 0, -1))
+addOperation(Op('arraylength',     0xbe, 0,  0))
+# astore is used to write returnAddress as well as reference
+addOperation(Op('astore',          0x3a, 1, -1))
+addOperation(Op('astore_0',        0x4b, 0, -1))
+addOperation(Op('astore_1',        0x4c, 0, -1))
+addOperation(Op('astore_2',        0x4d, 0, -1))
+addOperation(Op('astore_3',        0x4e, 0, -1))
+addOperation(Op('athrow',          0xbf, 0,  0))
+
+addOperation(Op('baload',          0x33, 0, -1))
+addOperation(Op('bastore',         0x54, 0, -3))
+addOperation(Op('bipush',          0x10, 1,  1))
+
+addOperation(Op('caload',          0x34, 0, -1))
+addOperation(Op('castore',         0x55, 0, -3))
+addOperation(Op('checkcast',       0xc0, 2,  0))
+
+addOperation(Op('d2f',             0x90, 0,  0))
+addOperation(Op('d2i',             0x8e, 0,  0))
+addOperation(Op('d2l',             0x8f, 0,  0))
+addOperation(Op('dadd',            0x63, 0, -1))
+addOperation(Op('daload',          0x31, 0, -1))
+addOperation(Op('dastore',         0x52, 0, -3))
+addOperation(Op('dcmpg',           0x98, 0, -1))
+addOperation(Op('dcmpl',           0x97, 0, -1))
+addOperation(Op('dconst_0',        0x0e, 0,  1))
+addOperation(Op('dconst_1',        0x0f, 0,  1))
+addOperation(Op('ddiv',            0x6f, 0, -1))
+addOperation(Op('dload',           0x18, 1,  1))
+addOperation(Op('dload_0',         0x26, 0,  1))
+addOperation(Op('dload_1',         0x27, 0,  1))
+addOperation(Op('dload_2',         0x28, 0,  1))
+addOperation(Op('dload_3',         0x29, 0,  1))
+addOperation(Op('dmul',            0x6b, 0, -1))
+addOperation(Op('dneg',            0x77, 0,  0))
+addOperation(Op('drem',            0x73, 0, -1))
+addOperation(Op('dreturn',         0xaf, 0, -1))
+addOperation(Op('dstore',          0x39, 1, -1))
+addOperation(Op('dstore_0',        0x47, 0, -1))
+addOperation(Op('dstore_1',        0x48, 0, -1))
+addOperation(Op('dstore_2',        0x49, 0, -1))
+addOperation(Op('dstore_3',        0x4a, 0, -1))
+addOperation(Op('dsub',            0x67, 0, -1))
+addOperation(Op('dup',             0x59, 0,  1))
+addOperation(Op('dup_x1',          0x5a, 0,  1))
+addOperation(Op('dup_x2',          0x5b, 0,  1)) # beware type categories
+addOperation(Op('dup2',            0x5c, 0,  2)) #
+addOperation(Op('dup2_x1',         0x5d, 0,  2)) # 
+addOperation(Op('dup2_x2',         0x5e, 0,  2)) #
 
 addOperation(Op('i2b',             0x91, 0,  0))
 addOperation(Op('i2c',             0x92, 0,  0))
@@ -82,7 +144,7 @@ addOperation(Op('ifle',            0x9e, 2, -1))
 addOperation(Op('iflt',            0x9b, 2, -1))
 addOperation(Op('ifne',            0x9a, 2, -1))
 addOperation(Op('ifnonnull',       0xc7, 2, -1))
-addOperation(Op('ifnull',          0xc7, 2, -1))
+addOperation(Op('ifnull',          0xc6, 2, -1))
 addOperation(Op('iinc',            0x84, 2,  0))
 # iload
 addOperation(Op('iload',           0x15, 1,  1)) # wide allowed
