@@ -1,0 +1,7 @@
+.class org.joellercoaster.pork.Sample ; this is a comment
+                                      ; this is another comment
+
+someLabel: ; and that is a label
+
+
+

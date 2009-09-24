@@ -18,6 +18,7 @@ tokens {
      RIGHTBRACKET = ')' ;
      LEFTSQUARE   = '[' ;
      RIGHTSQUARE  = ']' ;
+     
 }
 
 
@@ -28,36 +29,24 @@ import traceback
 from PorkLexer import PorkLexer
 }
 
+/* Parser */
 
-LETTER      : 'a'..'b' | 'A'..'Z' ;
-DIGIT       : '0'..'9' ;
-HEXDIGIT    : DIGIT | 'A'..'E' | 'a'..'e' ;
+porkfile : line+ ;
+line     : (labeldef | classDef)? comment? NEWLINE ;
 
-basicType : 'boolean' | 'char' | 'double' | 'float' | 'int' | 'long' ;
-void      : 'void' ;
+labeldef : label COLON ;
+label    : WORD ;
 
-labelDef    : label COLON NEWLINE ;
-instruction : offset? opcode argument* comment? NEWLINE;
-directive   : DOT (classDirective | methodDirective | staticMethodDirective ) NEWLINE;
+className : WORD (DOT WORD)* ;
+classDef : CLASS className ;
 
-classDirective  : 'class' className ;
-className       : word (DOT word)*  ;
-typeName : className | basicType ;
-arrayTypeName : typeName LEFTSQUARE RIGHTSQUARE ;
+comment : SEMICOLON .* ;
+/* Lexer */
 
-methodDirective       : 'method' methodDescriptor ;
-staticMethodDirective : 'staticMethod' methodDescriptor ;
-methodDescriptor      : (typeName | void) word LEFTBRACKET typeDescriptor* RIGHTBRACKET ;
-typeDescriptor : typeName | arrayTypeName ;
+fragment LETTER : 'a'..'z' | 'A'..'Z' ;
+WORD   : (LETTER | '_')+ ;
+CLASS  : '.class' ;
 
-offset  : integer ;
-integer : (DIGIT)+ | '0x' (HEXDIGIT HEXDIGIT)+ ;
+WHITESPACE : ( '\t' | ' ' | '\u000C' )+ { $channel = HIDDEN; } ;
 
-comment  : SEMICOLON .* ;
-
-argument : (integer | label) ;
-
-opcode   : LETTER+ ;
-word     : (LETTER | '_')+ ;
-label    : word ;
 
