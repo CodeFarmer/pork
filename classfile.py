@@ -4,7 +4,7 @@ from io import IOBase
 import logging as log
 import struct
 
-import opcode
+import jopcode
 
 MAGIC = 0xcafebabe
 MINOR_VERSION = 0x00
@@ -323,7 +323,7 @@ class attrib_info(object):
 
 SIZE_OF_EXCEPTION_TABLE_ENTRY = 8
 
-EMPTY_METHOD = u1(opcode.getOperation('return').opcode)
+EMPTY_METHOD = u1(jopcode.getOperation('return').opcode)
 
 class Code_attribute(object):
 
