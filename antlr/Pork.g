@@ -18,6 +18,7 @@ tokens {
      RIGHTBRACKET = ')' ;
      LEFTSQUARE   = '[' ;
      RIGHTSQUARE  = ']' ;
+     SINGLEQUOTE  = '\'' ;
      
 }
 
