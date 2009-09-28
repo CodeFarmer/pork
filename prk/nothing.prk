@@ -1,6 +1,8 @@
 .class org.joellercoaster.pork.Sample ; this is a comment
                                       ; this is another comment
 
+.method returnNothing() ; static
+
 someLabel: ; and that's a label
 
 

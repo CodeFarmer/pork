@@ -100,6 +100,8 @@ class JavaClass:
 
         assert isinstance(classname, basestring)
 
+        log.debug('JavaClass (' + `classname` + ', ' + `superclass` + ', ' + `access_flags` + ')')
+
         self.constant_pool = []
 
         self.this_class  = self.classConstant(classname)
@@ -116,7 +118,11 @@ class JavaClass:
     def utf8Constant(self, value):
 
         index = 0
-        unicodeValue = unicode(value, 'utf-8')
+
+        if isinstance(value, unicode):
+            unicodeValue = value
+        else:
+            unicodeValue = unicode(value, 'utf-8')
 
         for const in self.constant_pool:
 
@@ -184,12 +190,16 @@ class JavaClass:
 
     def field(self, name, descriptor, access_flags = ACC_PUBLIC, attributes = []):
         # FIXME check for name clashes!
-        self.fields.append(field_info(self, name, descriptor, access_flags, attributes))
+        f = field_info(self, name, descriptor, access_flags, attributes)
+        self.fields.append(f)
+        return f
 
     def method(self, name, descriptor, access_flags, attributes):
         # TODO assert the code attribute is present
         # FIXME check for clashes!
-        self.methods.append(method_info(self, name, descriptor, access_flags, attributes))
+        m = method_info(self, name, descriptor, access_flags, attributes)
+        self.methods.append(m)
+        return m
  
 
     # stream output
@@ -366,6 +376,8 @@ class Code_attribute(object):
 class field_info(object):
     
     def __init__(self, owningClass, name, descriptor, access_flags, attributes):
+
+        log.debug('field_info(' + `owningClass` + ', ' + `name` + ', ' + `descriptor` + ', ' + `access_flags` + ', ' + `attributes` + ')')
         
         self.name_index       = owningClass.utf8Constant(name)
         self.descriptor_index = owningClass.utf8Constant(descriptor)
