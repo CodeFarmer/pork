@@ -58,38 +58,37 @@ def classDef(className):
 
 /* Parser */
 
-porkfile : line+ ;
-line     : (labeldef | classDef | methodDef)? comment? NEWLINE ;
+porkfile  : classDef+ ;
+classDef  : classLine methodDef+ ;
 
-labeldef : label COLON ;
-label    : WORD ;
+methodDef  : methodLine (WORD)* ;
+
+methodLine returns [meth]: METHOD m=methodName LEFTBRACKET RIGHTBRACKET lineEnd { $meth = currentClass.method($m.text, methodDescriptor(), ACC_PUBLIC | ACC_STATIC, []) ; } ;
+methodName : WORD;
+
+lineEnd : SEMICOLON ;
+
+classLine returns [clazz]
+    : CLASS c=className lineEnd { $clazz = classDef($c.text); } ;
 
 className : WORD (DOT WORD)* ;
 
-classDef returns [clazz]
-    : CLASS c=className { $clazz = classDef($c.text); } ;
-
-/* only empty method defs so far */
-methodDef returns [method]
-    : METHOD /* accessModifier* */ m=methodName LEFTBRACKET RIGHTBRACKET { $method = currentClass.method($m.text, methodDescriptor(), ACC_PUBLIC | ACC_STATIC, []) ; } ;
-
-methodName : WORD ;
-
 /* accessModifier : PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | INTERFACE | ABSTRACT ; */
-
-comment : SEMICOLON .* ;
 
 /* Lexer */
 
 fragment LETTER   : 'a'..'z' | 'A'..'Z' ;
+fragment DIGIT    : '0..9' ;
 fragment HEXDIGIT : '0..9' | 'A..E' | 'a'..'e' ;
+fragment HEX_PREFIX : '0x' ;
 
-WORD   : (LETTER | '_')+ ;
+WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
+
 CLASS  : '.class' ;
 METHOD : '.method' ;
 
-INTEGER : HEXDIGIT+ ;
+INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
 
-WHITESPACE : ( '\t' | ' ' | '\u000C' )+ { $channel = HIDDEN; } ;
+WHITESPACE : ( '\t' | '\r' | '\n' | ' ' | '\u000C' )+ { $channel = HIDDEN; } ;
 
 
