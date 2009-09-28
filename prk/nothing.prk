@@ -4,6 +4,5 @@
 .method returnNothing() ; static
 
 someLabel: ; and that's a label
-
-
+    ret ;
 
