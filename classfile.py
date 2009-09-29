@@ -195,6 +195,8 @@ class JavaClass:
         return f
 
     def method(self, name, descriptor, access_flags, attributes):
+        # log.debug(`self` + '.method(' + `name` + ', ' + `descriptor` + ', ' + `access_flags` + ', ' + `attributes` + ')')
+
         # TODO assert the code attribute is present
         # FIXME check for clashes!
         m = method_info(self, name, descriptor, access_flags, attributes)

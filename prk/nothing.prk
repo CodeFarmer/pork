@@ -1,5 +1,9 @@
 .class org.joellercoaster.pork.Sample ;
+
 .method returnNothing() ;
 
-    ret
+    ret ;
 
+.method returnAnotherNothing() ;
+
+    ret;

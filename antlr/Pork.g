@@ -59,11 +59,16 @@ def classDef(className):
 /* Parser */
 
 porkfile  : classDef+ ;
+/* porkfile : (classLine | methodLine)+ ; */
 classDef  : classLine methodDef+ ;
 
-methodDef  : methodLine (WORD)* ;
+methodDef returns [meth]
+    : m=methodLine operation+ { $meth = currentClass.method($m.meth, methodDescriptor(), ACC_PUBLIC | ACC_STATIC, []) ; } ;
 
-methodLine returns [meth]: METHOD m=methodName LEFTBRACKET RIGHTBRACKET lineEnd { $meth = currentClass.method($m.text, methodDescriptor(), ACC_PUBLIC | ACC_STATIC, []) ; } ;
+/* FIXME this should return a descriptor, not just a name */
+methodLine returns [methodName]
+    : METHOD m=methodName LEFTBRACKET RIGHTBRACKET lineEnd { $methodName = $m.text ; } ;
+
 methodName : WORD;
 
 lineEnd : SEMICOLON ;
@@ -72,6 +77,8 @@ classLine returns [clazz]
     : CLASS c=className lineEnd { $clazz = classDef($c.text); } ;
 
 className : WORD (DOT WORD)* ;
+
+operation : WORD lineEnd ;
 
 /* accessModifier : PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | INTERFACE | ABSTRACT ; */
 
