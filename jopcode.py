@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+from bytes import u1
+
 class Op(object):
     
     # FIXME args to be a bit more expressive in terms of type?
@@ -26,6 +28,32 @@ class UnknownOperation(Exception):
     def __str__(self):
         return self.name
 
+class ArgumentException(Exception):
+
+    def __init__(self, name, args, mess=None):
+
+        assert isinstance(name, basestring)
+        self.name = name
+        self.args = args
+        self.mess = mess
+
+    # FIXME this doesn't appear to be working correctly
+    def __str__(self):
+
+        ret = self.name + ' ( '
+        for arg in self.args:
+            ret += arg
+            ret += ' '
+
+        ret += ')'
+
+        if self.mess:
+
+            ret += ' : '
+            ret += self.mess
+
+        return ret
+
 
 OPERATIONS = {}
 OPCODES = {}
@@ -48,6 +76,17 @@ def getOperation(name):
 
     return OPERATIONS[name]
 
+
+def byteString(name, args):
+    
+    op = getOperation(name)
+
+    if not len(args) == op.operands:
+        raise ArgumentException(name, args, 'expected ' + `op.operands` + ' operands, got ' + `len(args)`)
+
+    ret = u1(op.opcode)
+    for arg in args:
+        ret += u1(arg)
 
 Op('aaload',          0x32, 0, -1)
 Op('aastore',         0x53, 0, -3)
