@@ -2,8 +2,5 @@
 
 .method returnNothing() ;
 
-    ret ;
+    return ;
 
-.method returnAnotherNothing() ;
-
-    ret;
