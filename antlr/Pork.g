@@ -32,14 +32,15 @@ from classfile import JavaClass
 from classfile import methodDescriptor
 from classfile import ACC_PUBLIC, ACC_STATIC
 
-from jopcode import getOperation ;
+from jopcode import byteString ;
 
 from PorkLexer import PorkLexer
 
 # DEBUG
 log.basicConfig(level=log.DEBUG)
 def dump(o):
-    log.debug('DUMP: ' + `o`)
+    if o:
+        log.debug('DUMP: ' + `o`)
 
 # each parse can contain multiple classDefs, optionally intermingled
 classDefs = {}
@@ -63,7 +64,6 @@ def classDef(className):
 /* Parser */
 
 porkfile  : classDef+ ;
-/* porkfile : (classLine | methodLine)+ ; */
 classDef  : classLine methodDef+ ;
 
 methodDef returns [meth]
@@ -82,7 +82,11 @@ classLine returns [clazz]
 
 className : WORD (DOT WORD)* ;
 
-operation : mnemonic=WORD args=INTEGER* lineEnd { dump($args) ; getOperation($mnemonic.text) ; } ;
+operation returns [bytes]
+@init { args = [] }
+    : mnemonic=WORD
+      (arg=INTEGER { args.append(int($arg.text, 16)) ; } )* 
+      lineEnd { $bytes = byteString($mnemonic.text, args) ; } ;
 
 /* accessModifier : PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | INTERFACE | ABSTRACT ; */
 
