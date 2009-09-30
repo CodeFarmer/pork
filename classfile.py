@@ -4,6 +4,7 @@ from io import IOBase
 import logging as log
 import struct
 
+from bytes import u1, u2, u4
 import jopcode
 
 MAGIC = 0xcafebabe
@@ -51,20 +52,6 @@ CONSTANT_Utf8               =  1
 
 ATTR_CODE = 'Code'
 
-
-def u1(num):
-    return struct.pack('B', 0x000000ff & num)
-
-def u2(num):
-    return struct.pack('BB', (0x0000ff00 & num) >> 8,
-                              0x000000ff & num)
-
-def u4(num):
-
-    return struct.pack('BBBB', (0xff000000 & num) >> 24,
-                               (0x00ff0000 & num) >> 16,
-                               (0x0000ff00 & num) >> 8,
-                               0x000000ff & num)
 
 def fieldDescriptor(classname, arrayDimension = 0):
     
