@@ -12,7 +12,7 @@ options {
 tokens {
      COLON        = ':' ;
      SEMICOLON    = ';' ;
-     NEWLINE      = '\n';
+     /* NEWLINE      = '\n'; */
      DOT          = '.' ;
      LEFTBRACKET  = '(' ;
      RIGHTBRACKET = ')' ;
@@ -88,7 +88,8 @@ porkfile  : classDef+ { writeClasses() ; } ;
 classDef  : classLine methodDef+ ;
 
 methodDef returns [meth]
-    : m=methodLine s=stackLine l=localLine operation+ { $meth = currentClass.method($m.methodName, $m.methodDesc, ACC_PUBLIC | ACC_STATIC, [Code_attribute(currentClass, $s.size, $l.size)]) ; } ;
+@init { body = '' }
+    : m=methodLine s=stackLine l=localLine (op=operation { body += $op.bytes ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, ACC_PUBLIC | ACC_STATIC, [Code_attribute(currentClass, $s.size, $l.size, body)]) ; } ;
 
 stackLine returns [size] : STACK s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
 localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
