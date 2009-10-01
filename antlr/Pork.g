@@ -24,11 +24,13 @@ tokens {
 
 @header {
 
+from io import FileIO
 import logging as log
+import os
 import sys
 import traceback
 
-from classfile import JavaClass
+from classfile import Code_attribute, JavaClass
 from classfile import methodDescriptor
 from classfile import ACC_PUBLIC, ACC_STATIC
 
@@ -59,19 +61,45 @@ def classDef(className):
     currentClass = ret
     return ret
 
+CLASS_OUTPUT_DIR = 'classes/'
+
+def writeClasses():
+    
+    for className in classDefs.keys():
+        log.debug('writing class ' + className)
+
+        # make directory from classname
+        path = className.replace('.', '/')
+        dirPath = CLASS_OUTPUT_DIR + path[:path.rfind('/')]
+        if not os.path.exists(dirPath):
+            os.makedirs(dirPath)
+                
+        # write class file
+        outfile = FileIO(CLASS_OUTPUT_DIR + path + '.class', 'w')
+        classDefs[className].write(outfile)
+        
+        # TODO allow parser to be configured properly
+
 }
 
 /* Parser */
 
-porkfile  : classDef+ ;
+porkfile  : classDef+ { writeClasses() ; } ;
 classDef  : classLine methodDef+ ;
 
 methodDef returns [meth]
-    : m=methodLine operation+ { $meth = currentClass.method($m.methodName, methodDescriptor(), ACC_PUBLIC | ACC_STATIC, []) ; } ;
+    : m=methodLine s=stackLine l=localLine operation+ { $meth = currentClass.method($m.methodName, $m.methodDesc, ACC_PUBLIC | ACC_STATIC, [Code_attribute(currentClass, $s.size, $l.size)]) ; } ;
 
-/* FIXME this should return a descriptor, not just a name */
-methodLine returns [methodName]
-    : METHOD m=methodName LEFTBRACKET RIGHTBRACKET lineEnd { $methodName = $m.text ; } ;
+stackLine returns [size] : STACK s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
+localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
+
+
+methodLine returns [methodName, methodDesc]
+    : METHOD m=methodName LEFTBRACKET RIGHTBRACKET lineEnd
+    {
+        $methodName = $m.text ;
+        $methodDesc = methodDescriptor(); 
+    } ;
 
 methodName : WORD;
 
@@ -103,6 +131,8 @@ WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
 
 CLASS  : '.class' ;
 METHOD : '.method' ;
+STACK  : '.stack' ;
+LOCAL  : '.local' ;
 
 WHITESPACE : ( '\t' | '\r' | '\n' | ' ' | '\u000C' )+ { $channel = HIDDEN; } ;
 

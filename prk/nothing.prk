@@ -1,6 +1,8 @@
 .class org.joellercoaster.pork.Sample ;
 
 .method returnNothing() ;
+.stack 0x00 ;
+.local 0x00 ;
 
     return ;
 
