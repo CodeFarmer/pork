@@ -328,6 +328,8 @@ class Code_attribute(object):
 
     def __init__(self, owningClass, max_stack = 0, max_locals = 0, code = EMPTY_METHOD, exception_table = [], attributes = []):
 
+        log.debug('Code_attribute(' + `owningClass` + ', ' + `max_stack` + ', ' + `max_locals` + ', ' + `code` + ', ' + `exception_table` + ', ' + `attributes` + ')')
+
         self.attribute_name_index = owningClass.utf8Constant(ATTR_CODE)
 
         # Size of max_stack, max_locals, code_length, exception_table_length,

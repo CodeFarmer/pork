@@ -87,6 +87,10 @@ def writeClasses():
 porkfile  : classDef+ { writeClasses() ; } ;
 classDef  : classLine methodDef+ ;
 
+/*
+ * TODO: make stackLine and localLine optional, and either allow defaults, or
+ * guess through static analysis
+ */
 methodDef returns [meth]
 @init { body = '' }
     : m=methodLine s=stackLine l=localLine (op=operation { body += $op.bytes ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, ACC_PUBLIC | ACC_STATIC, [Code_attribute(currentClass, $s.size, $l.size, body)]) ; } ;
@@ -117,7 +121,15 @@ operation returns [bytes]
       (arg=INTEGER { args.append(int($arg.text, 16)) ; } )* 
       lineEnd { $bytes = byteString($mnemonic.text, args) ; } ;
 
-/* accessModifier : PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | INTERFACE | ABSTRACT ; */
+/* accessModifier : PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | INTERFACE | ABSTRACT ;
+PUBLIC    : 'public' ;
+PRIVATE   : 'private' ;
+PROTECTED : 'protected' ;
+STATIC    : 'static' ;
+FINAL     : 'final' ;
+INTERFACE : 'interface' ;
+*/
+
 
 /* Lexer */
 
@@ -126,6 +138,7 @@ fragment DIGIT    : '0'..'9' ;
 fragment HEXDIGIT : '0'..'9' | 'A..E' | 'a'..'e' ;
 fragment HEX_PREFIX : '0x' ;
 
+/* TODO return the actual integer, and allow non-hex (not in that order) */
 INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
 
 WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
