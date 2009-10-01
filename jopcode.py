@@ -2,6 +2,8 @@
 
 from bytes import u1
 
+import logging as log
+
 class Op(object):
     
     # FIXME args to be a bit more expressive in terms of type?
@@ -78,6 +80,8 @@ def getOperation(name):
 
 
 def byteString(name, args):
+
+    # log.debug('byteString(' + name + ', ' + `args` + ')')
     
     op = getOperation(name)
 
@@ -87,6 +91,9 @@ def byteString(name, args):
     ret = u1(op.opcode)
     for arg in args:
         ret += u1(arg)
+
+    return ret
+
 
 Op('aaload',          0x32, 0, -1)
 Op('aastore',         0x53, 0, -3)
