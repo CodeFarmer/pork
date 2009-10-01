@@ -32,7 +32,7 @@ import traceback
 
 from classfile import Code_attribute, JavaClass
 from classfile import methodDescriptor
-from classfile import ACC_PUBLIC, ACC_STATIC
+from classfile import ACC_PUBLIC, ACC_STATIC, DESC_INT, DESC_VOID
 
 from jopcode import byteString ;
 
@@ -100,10 +100,10 @@ localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; 
 
 
 methodLine returns [methodName, methodDesc]
-    : METHOD m=methodName LEFTBRACKET RIGHTBRACKET lineEnd
+    : METHOD t=typeName m=methodName LEFTBRACKET RIGHTBRACKET lineEnd
     {
         $methodName = $m.text ;
-        $methodDesc = methodDescriptor(); 
+        $methodDesc = methodDescriptor($t.desc); 
     } ;
 
 methodName : WORD;
@@ -115,23 +115,22 @@ classLine returns [clazz]
 
 className : WORD (DOT WORD)* ;
 
+typeName returns [desc] : T_INT ({ $desc = DESC_INT ; }) | (T_VOID { $desc = DESC_VOID ; }) ;
+
 operation returns [bytes]
 @init { args = [] }
     : mnemonic=WORD
       (arg=INTEGER { args.append(int($arg.text, 16)) ; } )* 
       lineEnd { $bytes = byteString($mnemonic.text, args) ; } ;
 
-/* accessModifier : PUBLIC | PRIVATE | PROTECTED | STATIC | FINAL | INTERFACE | ABSTRACT ;
-PUBLIC    : 'public' ;
-PRIVATE   : 'private' ;
-PROTECTED : 'protected' ;
-STATIC    : 'static' ;
-FINAL     : 'final' ;
-INTERFACE : 'interface' ;
+/* accessModifier : AM_PUBLIC | AM_PRIVATE | AM_PROTECTED | AM_STATIC | AM_FINAL | AM_INTERFACE | AM_ABSTRACT ;
+AM_PUBLIC    : 'public' ;
+AM_PRIVATE   : 'private' ;
+AM_PROTECTED : 'protected' ;
+AM_STATIC    : 'static' ;
+AM_FINAL     : 'final' ;
+AM_INTERFACE : 'interface' ;
 */
-
-
-/* Lexer */
 
 fragment LETTER   : 'a'..'z' | 'A'..'Z' ;
 fragment DIGIT    : '0'..'9' ;
@@ -140,6 +139,10 @@ fragment HEX_PREFIX : '0x' ;
 
 /* TODO return the actual integer, and allow non-hex (not in that order) */
 INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
+
+/* Consider not having these as tokens? */
+T_INT  : 'int'  ;
+T_VOID : 'void' ;
 
 WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
 

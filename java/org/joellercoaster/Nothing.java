@@ -14,6 +14,9 @@ class Nothing
         
         Sample.returnNothing();
 
+        System.out.println("returnZero returned " 
+                           + Sample.returnZero());
+
         System.out.println("Done.");
 
     }
