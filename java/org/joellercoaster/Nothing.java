@@ -17,6 +17,12 @@ class Nothing
         System.out.println("returnZero returned " 
                            + Sample.returnZero());
 
+        System.out.println("returnIntUnchanged(42) returned "
+                           + Sample.returnIntUnchanged(42));
+
+        System.out.println("addTwoInts(2, 3) returns "
+                           + Sample.addTwoInts(2, 3));
+
         System.out.println("Done.");
 
     }

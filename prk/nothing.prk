@@ -16,3 +16,23 @@
 
     iconst_0 ;
     ireturn  ;
+
+
+.method int returnIntUnchanged(int) ;
+
+.stack 0x01 ;
+.local 0x01 ;
+
+    iload_0 ;
+    ireturn ;
+
+.method int addTwoInts(int, int) ;
+
+.stack 0x02 ;
+.local 0x02 ;
+
+    iload_0 ;
+    iload_1 ;
+    iadd    ;
+    ireturn ;
+

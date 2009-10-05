@@ -19,6 +19,7 @@ tokens {
      LEFTSQUARE   = '[' ;
      RIGHTSQUARE  = ']' ;
      SINGLEQUOTE  = '\'';
+     COMMA        = ',' ;
 }
 
 
@@ -100,10 +101,11 @@ localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; 
 
 
 methodLine returns [methodName, methodDesc]
-    : METHOD t=typeName m=methodName LEFTBRACKET RIGHTBRACKET lineEnd
+@init { args = [] }
+    : METHOD t=typeName m=methodName LEFTBRACKET ((a=typeName { args.append($a.desc) }) (COMMA b=typeName { args.append($b.desc) })* )? RIGHTBRACKET lineEnd
     {
         $methodName = $m.text ;
-        $methodDesc = methodDescriptor($t.desc); 
+        $methodDesc = methodDescriptor($t.desc, args); 
     } ;
 
 methodName : WORD;
