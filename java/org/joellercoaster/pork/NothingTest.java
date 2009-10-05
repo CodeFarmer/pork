@@ -8,22 +8,19 @@ class NothingTest
     extends TestCase
 {
 
-    public void testNothing() { 
+    public void testSimpleStaticInvocation() { 
         Sample.returnNothing();
     }
 
-    /* testing declaration of return types */
-    public void testReturnZero() {
+    public void testStaticMethodWithReturnType() {
         assertTrue(Sample.returnZero() == 0);
     }
 
-    /* testing declaration of single int argument */
-    public void testReturnIntUnchanged() {
+    public void testStaticMethodWithSingleIntArgument() {
         assertTrue(Sample.returnIntUnchanged(42) == 42);
     }
 
-    /* testing declaration of multiple args */
-    public void testAddTwoInts() {
+    public void testStaticMethodWithMultipleArguments() {
         assertTrue(Sample.addTwoInts(2, 3) == 5);
     }
 
