@@ -1,12 +1,17 @@
-package org.joellercoaster;
+package org.joellercoaster.pork;
 
 import junit.framework.TestCase;
 
 import org.joellercoaster.pork.Sample;
 
-class NothingTest
+public class NothingTest
     extends TestCase
 {
+
+    public NothingTest(String name)
+    {
+        super(name);
+    }
 
     public void testSimpleStaticInvocation() { 
         Sample.returnNothing();
@@ -22,6 +27,10 @@ class NothingTest
 
     public void testStaticMethodWithMultipleArguments() {
         assertTrue(Sample.addTwoInts(2, 3) == 5);
+    }
+
+    public void testStaticMethodWithOjbectArgument() {
+        Sample.acceptObject(this);
     }
 
 

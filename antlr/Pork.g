@@ -2,26 +2,12 @@
  * Joel's combination pork grammar and ANTLR learning sandbox, bear with me.
  */
 
-grammar Pork;
+parser grammar Pork;
 
 options {
     language=Python;
+    tokenVocab=PorkLexer;
 }
-
-
-tokens {
-     COLON        = ':' ;
-     SEMICOLON    = ';' ;
-     /* NEWLINE      = '\n'; */
-     DOT          = '.' ;
-     LEFTBRACKET  = '(' ;
-     RIGHTBRACKET = ')' ;
-     LEFTSQUARE   = '[' ;
-     RIGHTSQUARE  = ']' ;
-     SINGLEQUOTE  = '\'';
-     COMMA        = ',' ;
-}
-
 
 @header {
 
@@ -32,7 +18,7 @@ import sys
 import traceback
 
 from classfile import Code_attribute, JavaClass
-from classfile import methodDescriptor
+from classfile import fieldDescriptor, methodDescriptor
 from classfile import ACC_PUBLIC, ACC_STATIC, DESC_INT, DESC_VOID
 
 from jopcode import byteString ;
@@ -117,7 +103,7 @@ classLine returns [clazz]
 
 className : WORD (DOT WORD)* ;
 
-typeName returns [desc] : T_INT ({ $desc = DESC_INT ; }) | (T_VOID { $desc = DESC_VOID ; }) ;
+typeName returns [desc] : T_INT ({ $desc = DESC_INT ; }) | (T_VOID { $desc = DESC_VOID ; }) | (c=className { $desc = fieldDescriptor($c.text) ; }) ;
 
 operation returns [bytes]
 @init { args = [] }
@@ -125,34 +111,6 @@ operation returns [bytes]
       (arg=INTEGER { args.append(int($arg.text, 16)) ; } )* 
       lineEnd { $bytes = byteString($mnemonic.text, args) ; } ;
 
-/* accessModifier : AM_PUBLIC | AM_PRIVATE | AM_PROTECTED | AM_STATIC | AM_FINAL | AM_INTERFACE | AM_ABSTRACT ;
-AM_PUBLIC    : 'public' ;
-AM_PRIVATE   : 'private' ;
-AM_PROTECTED : 'protected' ;
-AM_STATIC    : 'static' ;
-AM_FINAL     : 'final' ;
-AM_INTERFACE : 'interface' ;
-*/
-
-fragment LETTER   : 'a'..'z' | 'A'..'Z' ;
-fragment DIGIT    : '0'..'9' ;
-fragment HEXDIGIT : '0'..'9' | 'A..E' | 'a'..'e' ;
-fragment HEX_PREFIX : '0x' ;
-
-/* TODO return the actual integer, and allow non-hex (not in that order) */
-INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
-
-/* Consider not having these as tokens? */
-T_INT  : 'int'  ;
-T_VOID : 'void' ;
-
-WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
-
-CLASS  : '.class' ;
-METHOD : '.method' ;
-STACK  : '.stack' ;
-LOCAL  : '.local' ;
-
-WHITESPACE : ( '\t' | '\r' | '\n' | ' ' | '\u000C' )+ { $channel = HIDDEN; } ;
+/* accessModifier : AM_PUBLIC | AM_PRIVATE | AM_PROTECTED | AM_STATIC | AM_FINAL | AM_INTERFACE | AM_ABSTRACT ; */
 
 

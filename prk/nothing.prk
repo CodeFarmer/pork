@@ -36,3 +36,10 @@
     iadd    ;
     ireturn ;
 
+.method void acceptObject(java.lang.Object) ;
+
+.stack 0x00 ;
+.local 0x01 ;
+
+    return ;
+
