@@ -18,7 +18,7 @@ import sys
 import traceback
 
 from classfile import Code_attribute, JavaClass
-from classfile import fieldDescriptor, methodDescriptor
+from classfile import arrayDescriptor, fieldDescriptor, methodDescriptor
 from classfile import ACC_PUBLIC, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
@@ -89,7 +89,7 @@ localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; 
 
 methodLine returns [methodName, methodDesc]
 @init { args = [] }
-    : METHOD t=typeName m=methodName LEFTBRACKET ((a=typeName { args.append($a.desc) }) (COMMA b=typeName { args.append($b.desc) })* )? RIGHTBRACKET lineEnd
+    : METHOD t=typeName m=methodName LEFTBRACKET ((a=typeName { args.append(arrayDescriptor($a.desc, $a.arrayDim)) }) (COMMA b=typeName { args.append(arrayDescriptor($b.desc, $b.arrayDim)) })* )? RIGHTBRACKET lineEnd
     {
         $methodName = $m.text ;
         $methodDesc = methodDescriptor($t.desc, args); 
@@ -104,7 +104,9 @@ classLine returns [clazz]
 
 className : WORD (DOT WORD)* ;
 
-typeName returns [desc] : T_BOOLEAN ({ $desc = DESC_BOOLEAN ; }) | T_BYTE ({ $desc = DESC_BYTE ; }) | T_CHAR ({ $desc = DESC_CHAR ; }) | T_DOUBLE ({ $desc = DESC_DOUBLE ; })| T_FLOAT ({ $desc = DESC_FLOAT ; }) | T_INT ({ $desc = DESC_INT ; }) | T_LONG ({ $desc = DESC_LONG ; }) | T_SHORT ({ $desc = DESC_SHORT ; }) | (T_VOID { $desc = DESC_VOID ; }) | (c=className { $desc = fieldDescriptor($c.text) ; }) ;
+typeName returns [desc, arrayDim]
+@init { $arrayDim = 0; }
+    : (T_BOOLEAN ({ $desc = DESC_BOOLEAN ; }) | T_BYTE ({ $desc = DESC_BYTE ; }) | T_CHAR ({ $desc = DESC_CHAR ; }) | T_DOUBLE ({ $desc = DESC_DOUBLE ; })| T_FLOAT ({ $desc = DESC_FLOAT ; }) | T_INT ({ $desc = DESC_INT ; }) | T_LONG ({ $desc = DESC_LONG ; }) | T_SHORT ({ $desc = DESC_SHORT ; }) | (T_VOID { $desc = DESC_VOID ; }) | (c=className { $desc = fieldDescriptor($c.text) ; })) (ARRAYDIM { $arrayDim = $arrayDim + 1; })* ;
 
 
 operation returns [bytes]

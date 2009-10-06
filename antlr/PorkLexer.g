@@ -10,14 +10,14 @@ METHOD : '.method' ;
 STACK  : '.stack' ;
 LOCAL  : '.local' ;
 
+ARRAYDIM : '[]' ;
+
 COLON        : ':' ;
 SEMICOLON    : ';' ;
 /* NEWLINE      : '\n'; */
 DOT          : '.' ;
 LEFTBRACKET  : '(' ;
 RIGHTBRACKET : ')' ;
-LEFTSQUARE   : '[' ;
-RIGHTSQUARE  : ']' ;
 SINGLEQUOTE  : '\'';
 COMMA        : ',' ;
 

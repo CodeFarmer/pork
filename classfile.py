@@ -52,18 +52,28 @@ CONSTANT_Utf8               =  1
 
 ATTR_CODE = 'Code'
 
-
+# FIXME arrayDimension never gets used by the parser, remove?
 def fieldDescriptor(classname, arrayDimension = 0):
     
     ret = ''
     for i in range(arrayDimension):
         ret += '['
 
-    ret += 'L'
+    ret = 'L'
     ret += classname.replace('.', '/')
     ret += ';'
 
+    return arrayDescriptor(ret, arrayDimension)
+
+
+def arrayDescriptor(typename, arrayDimension=0):
+    
+    ret = typename
+    for i in range(arrayDimension):
+        ret = '[' + ret
+
     return ret
+
 
 # fieldTypes and returnType should be a list of either DESC_FOO or returns
 # from fieldDescriptor
