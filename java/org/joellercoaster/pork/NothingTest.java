@@ -33,5 +33,9 @@ public class NothingTest
         Sample.acceptObject(this);
     }
 
+    public void testStaticMethodWithCharArgument() {
+        assertTrue(Sample.getNextChar('a') == 'b');
+    }
+
 
 }

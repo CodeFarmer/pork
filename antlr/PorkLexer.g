@@ -38,9 +38,15 @@ fragment HEX_PREFIX : '0x' ;
 /* TODO return the actual integer, and allow non-hex (not in that order) */
 INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
 
-/* Consider not having these as tokens? */
-T_INT  : 'int'  ;
-T_VOID : 'void' ;
+T_BOOL   : 'boolean' ;
+T_BYTE   : 'byte'   ;
+T_CHAR   : 'char'   ;
+T_DOUBLE : 'double' ;
+T_FLOAT  : 'float'  ;
+T_INT    : 'int'    ;
+T_LONG   : 'long'   ;
+T_SHORT  : 'short'  ;
+T_VOID   : 'void'   ;
 
 WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
 

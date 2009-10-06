@@ -43,3 +43,12 @@
 
     return ;
 
+.method char getNextChar(char) ;
+
+.stack 0x02 ;
+.local 0x01 ;
+
+    iload_0  ;
+    iconst_1 ;
+    iadd     ;
+    ireturn  ;
