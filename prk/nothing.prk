@@ -57,7 +57,7 @@
 .method void main(java.lang.String[]) ;
 
 .stack 0x00 ;
-.local 0x02 ;
+.local 0x01 ;
 
     return ;
 
