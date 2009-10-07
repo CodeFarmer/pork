@@ -88,12 +88,15 @@ localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; 
 
 
 methodLine returns [methodName, methodDesc]
-@init { args = [] }
-    : METHOD t=typeName m=methodName LEFTBRACKET ((a=typeName { args.append(arrayDescriptor($a.desc, $a.arrayDim)) }) (COMMA b=typeName { args.append(arrayDescriptor($b.desc, $b.arrayDim)) })* )? RIGHTBRACKET lineEnd
+    : METHOD t=typeName m=methodName a=methodArgs lineEnd
     {
         $methodName = $m.text ;
-        $methodDesc = methodDescriptor($t.desc, args); 
+        $methodDesc = methodDescriptor($t.desc, $a.args); 
     } ;
+
+methodArgs returns [args]
+@init { $args = [] }
+    : LEFTBRACKET ((a=typeName { args.append(arrayDescriptor($a.desc, $a.arrayDim)) }) (COMMA b=typeName { args.append(arrayDescriptor($b.desc, $b.arrayDim)) })* )? RIGHTBRACKET ;
 
 methodName : WORD;
 
@@ -112,7 +115,7 @@ typeName returns [desc, arrayDim]
 operation returns [bytes]
 @init { args = [] }
     : mnemonic=WORD
-      (arg=INTEGER { args.append(int($arg.text, 16)) ; } )* 
+      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1]));}) )* 
       lineEnd { $bytes = byteString($mnemonic.text, args) ; } ;
 
 /* accessModifier : AM_PUBLIC | AM_PRIVATE | AM_PROTECTED | AM_STATIC | AM_FINAL | AM_INTERFACE | AM_ABSTRACT ; */

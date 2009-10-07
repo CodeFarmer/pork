@@ -61,3 +61,11 @@
 
     return ;
 
+.method java.lang.String getString() ;
+
+.stack 0x01;
+.local 0x00;
+
+    ldc "This is a String literal" ;
+    areturn;
+

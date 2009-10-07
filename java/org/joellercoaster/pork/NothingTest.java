@@ -37,5 +37,8 @@ public class NothingTest
         assertTrue(Sample.getNextChar('a') == 'b');
     }
 
+    public void testStaticStringLiteral() {
+        assertEquals("This is a String literal", Sample.getString());
+    }
 
 }
