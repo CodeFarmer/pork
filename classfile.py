@@ -39,15 +39,15 @@ DESC_VOID    = 'V'
 
 # constant tags
 CONSTANT_Class              =  7
-#CONSTANT_Fieldref           =  9
-#CONSTANT_Methodref          = 10
+CONSTANT_Fieldref           =  9
+CONSTANT_Methodref          = 10
 #CONSTANT_InterfaceMethodRef = 11
 CONSTANT_String             =  8
 CONSTANT_Integer            =  3
 #CONSTANT_Float              =  4
 #CONSTANT_Long               =  5
 #CONSTANT_Double             =  6
-#CONSTANT_NameAndType        = 12
+CONSTANT_NameAndType        = 12
 CONSTANT_Utf8               =  1
 
 ATTR_CODE = 'Code'
@@ -177,6 +177,22 @@ class JavaClass:
         self.constant_pool.append(CONSTANT_Class_info(utf8Index))
         return index + 1
 
+    def nameAndTypeConstant(self, name, typeDescriptor):
+
+        nameIndex = self.utf8Constant(name)
+        typeIndex = self.utf8Constant(typeDescriptor)
+        index = 0
+
+        for const in self.constant_pool:
+            if const.tag == CONSTANT_NameAndType and const.value == nameIndex and const.secondValue == typeIndex:
+                return index + 1
+            else:
+                index += 1
+
+         self.constant_pool.append(COSNTANT_NameAndType_info(nameIndex, typeIndex))
+         return index + 1
+
+
     # interface implementation
 
     def implementedInterface(self, name):
@@ -234,7 +250,6 @@ class JavaClass:
         for method in self.methods:
             log.debug('writing method ' + `method` + ' at ' + getPos(stream))
             method.write(stream)
-
         
         stream.write(u2(len(self.attributes)))
         for attribute in self.attributes:
@@ -312,6 +327,39 @@ class CONSTANT_Class_info(ConstantStringTableEntry):
 
         ConstantStringTableEntry.__init__(self, CONSTANT_Class, index)
 
+# fields, methods, interface methods
+
+class ConstantReferencePairTableEntry(ConstantTableEntry):
+    
+    def __init__(self, tag, index1, index2):
+
+        ConstantTableEntry.__init__(self, tag)
+        self.value = index1
+        self.secondValue = index2
+        self.bytes = u2(index) + u2(index2)
+        
+
+class CONSTANT_NameAndType_info(ConstantReferencePairTableEntry):
+
+    def __init__(self,  nameIndex, descriptorIndex):
+
+       ConstantReferencePairTableEntry.__init__(self, CONSTANT_NameAndType, nameIndex, descriptorIndex)
+
+class CONSTANT_Fieldref_info(ConstantReferencePairTableEntry):
+
+    def __init__(self, classIndex, nameAndTypeIndex):
+        
+        ConstantReferencePairTableEntry.__init__(self, CONSTANT_Fieldref, classIndex, nameAndTypeIndex)
+
+
+class CONSTANT_Methodref_info(ConstantReferencePairTableEntry):
+
+    def __init__(self, classIndex, nameAndTypeIndex):
+        
+        ConstantReferencePairTableEntry.__init__(self, CONSTANT_Methodref, classIndex, nameAndTypeIndex)
+
+
+
 # attributes
 # TODO wire this into class and utility methods
 
@@ -328,6 +376,7 @@ class attrib_info(object):
         stream.write(u2(self.name_index))
         stream.write(u4(len(self.info)))
         stream.write(self.info)
+
 
 
 SIZE_OF_EXCEPTION_TABLE_ENTRY = 8
