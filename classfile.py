@@ -189,8 +189,22 @@ class JavaClass:
             else:
                 index += 1
 
-         self.constant_pool.append(COSNTANT_NameAndType_info(nameIndex, typeIndex))
-         return index + 1
+        self.constant_pool.append(CONSTANT_NameAndType_info(nameIndex, typeIndex))
+        return index + 1
+
+    def methodConstant(self, className, methodName, methodTypeDescriptor):
+
+        classIndex = self.classConstant(className)
+        nameAndTypeIndex = self.nameAndTypeConstant(methodName, methodDescriptor);
+
+        for const in self.constant_pool:
+            if const.tag == CONSTANT_Methodref and const.value == classIndex and const.secondValue == nameAndTypeIndex:
+                return index + 1
+            else:
+                index += 1
+
+        self.constant_pool.append(CONSTANT_Methodref_info(nameIndex, typeIndex))
+        return index + 1
 
 
     # interface implementation
