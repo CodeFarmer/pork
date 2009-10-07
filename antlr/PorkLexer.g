@@ -18,7 +18,6 @@ SEMICOLON    : ';' ;
 DOT          : '.' ;
 LEFTBRACKET  : '(' ;
 RIGHTBRACKET : ')' ;
-SINGLEQUOTE  : '\'';
 COMMA        : ',' ;
 
 /*
@@ -34,6 +33,10 @@ fragment LETTER   : 'a'..'z' | 'A'..'Z' ;
 fragment DIGIT    : '0'..'9' ;
 fragment HEXDIGIT : '0'..'9' | 'A..E' | 'a'..'e' ;
 fragment HEX_PREFIX : '0x' ;
+
+fragment QUOTE        : '"';
+
+STRING_LITERAL : QUOTE .* QUOTE ;
 
 /* TODO return the actual integer, and allow non-hex (not in that order) */
 INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
