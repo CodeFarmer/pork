@@ -46,6 +46,7 @@ STRING_LITERAL : QUOTE .* QUOTE ;
 
 /* TODO return the actual integer, and allow non-hex (not in that order) */
 HEX_INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
+DEC_INTEGER : DIGIT+ ;
 
 T_BOOL   : 'boolean' ;
 T_BYTE   : 'byte'   ;

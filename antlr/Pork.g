@@ -104,8 +104,10 @@ methodDef returns [meth]
 @init { body = '' }
     : m=methodLine s=stackLine l=localLine (op=operation { body += $op.bytes ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, body)]) ; } ;
 
-stackLine returns [size] : STACK s=HEX_INTEGER lineEnd { $size = int($s.text, 16) ; } ;
-localLine returns [size] : LOCAL s=HEX_INTEGER lineEnd { $size = int($s.text, 16) ; } ;
+stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
+localLine returns [size] : LOCAL s=integer lineEnd { $size = $s.intVal ; } ;
+
+integer returns [intVal] : (s=HEX_INTEGER {$intVal = int($s.text, 16) ;}) | (s=DEC_INTEGER {$intVal = int($s.text, 10) ;}) ;
 
 /* FIXME void fields are legal */
 /* NOTE that fields automatically get added to the symbol table */

@@ -19,11 +19,12 @@
 
 .method static int returnZero() ;
 
-.stack 0x01 ;
-.local 0x00 ;
+.stack 1 ;
+.local 0 ;
 
     iconst_0 ;
     ireturn  ;
+
 
 
 .method static int returnIntUnchanged(int) ;
