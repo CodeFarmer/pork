@@ -35,6 +35,7 @@ def dump(o):
 # each parse can contain multiple classDefs, optionally intermingled
 classDefs = {}
 currentClass = None
+currentClassSymbols = {}
 
 def classDef(className):
 
@@ -47,6 +48,7 @@ def classDef(className):
         ret = classDefs[className]
 
     currentClass = ret
+    currentClassSymbols = {}
     return ret
 
 CLASS_OUTPUT_DIR = 'classes/'
@@ -73,7 +75,16 @@ def writeClasses():
 /* Parser */
 
 porkfile  : classDef+ { writeClasses() ; } ;
-classDef  : classLine methodDef+ ;
+classDef  : classLine constantLine* methodDef+ ;
+
+/* this will change! just getting method constants working to start with */
+/* FIXME */
+constantLine
+    : CONSTANT name=WORD c=className m=methodSignature lineEnd 
+    {
+        const = currentClass.methodConstant($c.text, $m.methodName, $m.methodDesc) ;
+        currentClassSymbols[$name.text] = [const >> 8 & 0xff, const & 0xff];
+    };
 
 /*
  * TODO: make stackLine and localLine optional, and either allow defaults, or
@@ -91,11 +102,18 @@ methodLine returns [methodName, methodDesc, accessMask]
 @init {
     $accessMask = 0;
 }
-    : METHOD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName m=methodName a=methodArgs lineEnd
+    : METHOD (acc=accessClause { $accessMask = $acc.mask ; })? m=methodSignature lineEnd
+    {
+        $methodName = $m.methodName ;
+        $methodDesc = $m.methodDesc ;
+    } ;
+
+methodSignature returns [methodName, methodDesc]
+    :  t=typeName m=methodName a=methodArgs 
     {
         $methodName = $m.text ;
         $methodDesc = methodDescriptor($t.desc, $a.args);
-    } ;
+    };
 
 methodArgs returns [args]
 @init { $args = [] }
@@ -122,8 +140,13 @@ accessClause returns [mask]
 operation returns [bytes]
 @init { args = [] }
     : mnemonic=WORD
-      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1]));}) )* 
+      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbol { args += $symb.index ; }) )* 
       lineEnd { $bytes = byteString($mnemonic.text, args) ; } ;
+
+
+/* FIXME write a proper error message for this */
+/* This returns a two-byte list */
+symbol returns [index] : DOLLAR w=WORD { $index = currentClassSymbols[$w.text] ;} ;
 
 /* accessModifier : AM_PUBLIC | AM_PRIVATE | AM_PROTECTED | AM_STATIC | AM_FINAL | AM_INTERFACE | AM_ABSTRACT ; */
 

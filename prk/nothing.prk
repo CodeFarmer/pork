@@ -1,5 +1,6 @@
 .class org.joellercoaster.pork.Sample ;
 
+.constant superInit java.lang.Object void <init>() ;
 
 .method static void returnNothing() ;
 
@@ -76,4 +77,13 @@
 
     aload_0 ;
     areturn ;
+
+.method public void <init>() ;
+
+.stack 0x01 ;
+.local 0x01 ;
+
+    aload_0 ;
+    invokespecial $superInit ;
+    return ;
 

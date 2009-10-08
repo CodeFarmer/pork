@@ -5,10 +5,11 @@ options {
     filter=true;
 }
 
-CLASS  : '.class' ;
-METHOD : '.method' ;
-STACK  : '.stack' ;
-LOCAL  : '.local' ;
+CLASS    : '.class' ;
+METHOD   : '.method' ;
+STACK    : '.stack' ;
+LOCAL    : '.local' ;
+CONSTANT : '.constant' ;
 
 ARRAYDIM : '[]' ;
 
@@ -19,6 +20,7 @@ DOT          : '.' ;
 LEFTBRACKET  : '(' ;
 RIGHTBRACKET : ')' ;
 COMMA        : ',' ;
+DOLLAR       : '$' ;
 
 /*
 AM_PUBLIC    : 'public' ;
