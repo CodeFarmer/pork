@@ -1,6 +1,8 @@
 .class org.joellercoaster.pork.Sample ;
 
 .constant superInit java.lang.Object void <init>() ;
+.constant println   java.io.PrintStream void println(java.lang.String) ;
+.constant sysOut    java.lang.System java.io.PrintStream out ;
 
 .method static void returnNothing() ;
 
@@ -55,10 +57,14 @@
     i2c      ;
     ireturn  ;
 
-.method static void main(java.lang.String[]) ;
+.method public static void main(java.lang.String[]) ;
 
-.stack 0x00 ;
+.stack 0x02 ;
 .local 0x01 ;
+
+    getstatic     $sysOut ;
+    ldc           "Hello, world." ;
+    invokevirtual $println ;
 
     return ;
 

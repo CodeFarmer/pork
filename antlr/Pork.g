@@ -80,10 +80,20 @@ classDef  : classLine constantLine* methodDef+ ;
 /* this will change! just getting method constants working to start with */
 /* FIXME */
 constantLine
-    : CONSTANT name=WORD c=className m=methodSignature lineEnd 
+    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.index ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.index ; }));
+
+classMethod returns [index]
+    : c=className m=methodSignature lineEnd
     {
         const = currentClass.methodConstant($c.text, $m.methodName, $m.methodDesc) ;
-        currentClassSymbols[$name.text] = [const >> 8 & 0xff, const & 0xff];
+        $index = [const >> 8 & 0xff, const & 0xff];
+    };
+
+classField returns [index]
+    : c=className t=typeName w=WORD lineEnd
+    {
+        const = currentClass.fieldConstant($c.text, $w.text, arrayDescriptor($t.desc, $t.arrayDim));
+        $index = [const >> 8 & 0xff, const & 0xff];
     };
 
 /*

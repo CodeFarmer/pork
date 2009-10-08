@@ -154,7 +154,7 @@ class JavaClass:
 
         for const in self.constant_pool:
 
-            if const.tag == CONSTANT_String and const.index == utf8Index:
+            if const.tag == CONSTANT_String and const.value == utf8Index:
                 return index + 1
             else:
                 index += 1
@@ -206,6 +206,22 @@ class JavaClass:
 
         self.constant_pool.append(CONSTANT_Methodref_info(classIndex, nameAndTypeIndex))
         return index + 1
+
+    def fieldConstant(self, className, fieldName, typeDesc):
+
+        classIndex = self.classConstant(className)
+        nameAndTypeIndex = self.nameAndTypeConstant(fieldName, typeDesc);
+        index = 0
+
+        for const in self.constant_pool:
+            if const.tag == CONSTANT_Fieldref and const.value == classIndex and const.secondValue == nameAndTypeIndex:
+                return index + 1
+            else:
+                index += 1
+
+        self.constant_pool.append(CONSTANT_Fieldref_info(classIndex, nameAndTypeIndex))
+        return index + 1
+
 
 
     # interface implementation
