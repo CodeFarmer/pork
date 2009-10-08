@@ -39,12 +39,13 @@ fragment HEX_PREFIX : '0x' ;
 
 fragment QUOTE        : '"';
 
-INIT : '<init>' ;
+INIT   : '<init>'   ;
+CLINIT : '<clinit>' ;
 
 STRING_LITERAL : QUOTE .* QUOTE ;
 
 /* TODO return the actual integer, and allow non-hex (not in that order) */
-INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
+HEX_INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
 
 T_BOOL   : 'boolean' ;
 T_BYTE   : 'byte'   ;

@@ -98,6 +98,16 @@
     invokespecial $superInit ;
     return ;
 
+.method public static void <clinit>() ;
+
+.stack 0x01 ;
+.local 0x00 ;
+
+    ldc       "Hello, world." ;
+    putstatic $HELLO_WORLD ;
+
+    return ;
+
 .method public void setIntField(int) ;
 
 .stack 0x02 ;

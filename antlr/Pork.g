@@ -104,8 +104,8 @@ methodDef returns [meth]
 @init { body = '' }
     : m=methodLine s=stackLine l=localLine (op=operation { body += $op.bytes ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, body)]) ; } ;
 
-stackLine returns [size] : STACK s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
-localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
+stackLine returns [size] : STACK s=HEX_INTEGER lineEnd { $size = int($s.text, 16) ; } ;
+localLine returns [size] : LOCAL s=HEX_INTEGER lineEnd { $size = int($s.text, 16) ; } ;
 
 /* FIXME void fields are legal */
 /* NOTE that fields automatically get added to the symbol table */
@@ -141,7 +141,7 @@ methodArgs returns [args]
 @init { $args = [] }
     : LEFTBRACKET ((a=typeName { args.append(arrayDescriptor($a.desc, $a.arrayDim)) }) (COMMA b=typeName { args.append(arrayDescriptor($b.desc, $b.arrayDim)) })* )? RIGHTBRACKET ;
 
-methodName : WORD | INIT ;
+methodName : WORD | INIT | CLINIT ;
 
 lineEnd : SEMICOLON ;
 

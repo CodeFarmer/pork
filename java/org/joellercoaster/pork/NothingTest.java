@@ -55,7 +55,7 @@ public class NothingTest
     }
 
     public void testStaticInitializedField() {
-        assertTrue(Sample.HELLO_WORLD == "Hello, World");
+        assertEquals("Hello, world.", Sample.HELLO_WORLD);
     }
 
 }
