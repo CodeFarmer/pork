@@ -41,4 +41,9 @@ public class NothingTest
         assertEquals("This is a String literal", Sample.getString());
     }
 
+    public void testNonstaticMethod() {
+        Sample sample = new Sample();
+        assertTrue(sample.returnThis() == sample);
+    }
+
 }

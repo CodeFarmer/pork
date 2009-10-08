@@ -81,17 +81,20 @@ classDef  : classLine methodDef+ ;
  */
 methodDef returns [meth]
 @init { body = '' }
-    : m=methodLine s=stackLine l=localLine (op=operation { body += $op.bytes ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, ACC_PUBLIC | ACC_STATIC, [Code_attribute(currentClass, $s.size, $l.size, body)]) ; } ;
+    : m=methodLine s=stackLine l=localLine (op=operation { body += $op.bytes ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, body)]) ; } ;
 
 stackLine returns [size] : STACK s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
 localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
 
 
-methodLine returns [methodName, methodDesc]
-    : METHOD t=typeName m=methodName a=methodArgs lineEnd
+methodLine returns [methodName, methodDesc, accessMask]
+@init {
+    $accessMask = 0;
+}
+    : METHOD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName m=methodName a=methodArgs lineEnd
     {
         $methodName = $m.text ;
-        $methodDesc = methodDescriptor($t.desc, $a.args); 
+        $methodDesc = methodDescriptor($t.desc, $a.args);
     } ;
 
 methodArgs returns [args]
@@ -110,6 +113,10 @@ className : WORD (DOT WORD)* ;
 typeName returns [desc, arrayDim]
 @init { $arrayDim = 0; }
     : (T_BOOLEAN ({ $desc = DESC_BOOLEAN ; }) | T_BYTE ({ $desc = DESC_BYTE ; }) | T_CHAR ({ $desc = DESC_CHAR ; }) | T_DOUBLE ({ $desc = DESC_DOUBLE ; })| T_FLOAT ({ $desc = DESC_FLOAT ; }) | T_INT ({ $desc = DESC_INT ; }) | T_LONG ({ $desc = DESC_LONG ; }) | T_SHORT ({ $desc = DESC_SHORT ; }) | (T_VOID { $desc = DESC_VOID ; }) | (c=className { $desc = fieldDescriptor($c.text) ; })) (ARRAYDIM { $arrayDim = $arrayDim + 1; })* ;
+
+accessClause returns [mask]
+@init { $mask = 0; }
+    : ((A_STATIC { $mask |= ACC_STATIC ; }) | (A_PUBLIC { $mask |= ACC_PUBLIC ; }))+ ; /* obviously more go here */
 
 
 operation returns [bytes]

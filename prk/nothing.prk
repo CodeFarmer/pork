@@ -1,7 +1,7 @@
 .class org.joellercoaster.pork.Sample ;
 
 
-.method void returnNothing() ;
+.method static void returnNothing() ;
 
 .stack 0x00 ;
 .local 0x00 ;
@@ -9,7 +9,7 @@
     return ;
 
 
-.method int returnZero() ;
+.method static int returnZero() ;
 
 .stack 0x01 ;
 .local 0x00 ;
@@ -18,7 +18,7 @@
     ireturn  ;
 
 
-.method int returnIntUnchanged(int) ;
+.method static int returnIntUnchanged(int) ;
 
 .stack 0x01 ;
 .local 0x01 ;
@@ -26,7 +26,7 @@
     iload_0 ;
     ireturn ;
 
-.method int addTwoInts(int, int) ;
+.method static int addTwoInts(int, int) ;
 
 .stack 0x02 ;
 .local 0x02 ;
@@ -36,14 +36,14 @@
     iadd    ;
     ireturn ;
 
-.method void acceptObject(java.lang.Object) ;
+.method static void acceptObject(java.lang.Object) ;
 
 .stack 0x00 ;
 .local 0x01 ;
 
     return ;
 
-.method char getNextChar(char) ;
+.method static char getNextChar(char) ;
 
 .stack 0x02 ;
 .local 0x01 ;
@@ -54,18 +54,26 @@
     i2c      ;
     ireturn  ;
 
-.method void main(java.lang.String[]) ;
+.method static void main(java.lang.String[]) ;
 
 .stack 0x00 ;
 .local 0x01 ;
 
     return ;
 
-.method java.lang.String getString() ;
+.method static java.lang.String getString() ;
 
-.stack 0x01;
-.local 0x00;
+.stack 0x01 ;
+.local 0x00 ;
 
     ldc "This is a String literal" ;
-    areturn;
+    areturn ;
+
+.method org.joellercoaster.pork.Sample returnThis() ;
+
+.stack 0x01 ;
+.local 0x01 ;
+
+    aload_0 ;
+    areturn ;
 
