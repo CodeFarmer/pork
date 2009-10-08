@@ -5,9 +5,13 @@
 .constant println   java.io.PrintStream void println(java.lang.String) ;
 .constant sysOut    java.lang.System java.io.PrintStream out ;
 
+.constant twentyFive 25 ;
+.constant feep "feep" ;
+
 
 .field public static java.lang.String HELLO_WORLD;
 .field public int fieldInt;
+
 
 .method static void returnNothing() ;
 
@@ -26,6 +30,14 @@
     ireturn  ;
 
 
+.method static int returnTwentyFive() ;
+
+.stack 1 ;
+.local 0 ;
+
+    ldc $twentyFive ;
+    ireturn  ;
+
 
 .method static int returnIntUnchanged(int) ;
 
@@ -34,6 +46,7 @@
 
     iload_0 ;
     ireturn ;
+
 
 .method static int addTwoInts(int, int) ;
 
@@ -45,12 +58,14 @@
     iadd    ;
     ireturn ;
 
+
 .method static void acceptObject(java.lang.Object) ;
 
 .stack 0x00 ;
 .local 0x01 ;
 
     return ;
+
 
 .method static char getNextChar(char) ;
 
@@ -63,6 +78,7 @@
     i2c      ;
     ireturn  ;
 
+
 .method public static void main(java.lang.String[]) ;
 
 .stack 0x02 ;
@@ -74,6 +90,7 @@
 
     return ;
 
+
 .method static java.lang.String getString() ;
 
 .stack 0x01 ;
@@ -82,6 +99,15 @@
     ldc "This is a String literal" ;
     areturn ;
 
+.method static java.lang.String getAnotherString() ;
+
+.stack 0x01 ;
+.local 0x00 ;
+
+    ldc $feep ;
+    areturn   ;
+
+
 .method org.joellercoaster.pork.Sample returnThis() ;
 
 .stack 0x01 ;
@@ -89,6 +115,7 @@
 
     aload_0 ;
     areturn ;
+
 
 .method public void <init>() ;
 
@@ -99,6 +126,7 @@
     invokespecial $superInit ;
     return ;
 
+
 .method public static void <clinit>() ;
 
 .stack 0x01 ;
@@ -108,6 +136,7 @@
     putstatic $HELLO_WORLD ;
 
     return ;
+
 
 .method public void setIntField(int) ;
 
