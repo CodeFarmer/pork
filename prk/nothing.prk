@@ -7,7 +7,7 @@
 
 
 .field public static java.lang.String HELLO_WORLD;
-
+.field public int fieldInt;
 
 .method static void returnNothing() ;
 
@@ -96,5 +96,17 @@
 
     aload_0 ;
     invokespecial $superInit ;
+    return ;
+
+.method public void setIntField(int) ;
+
+.stack 0x02 ;
+.local 0x02 ;
+
+    aload_0 ;
+    iload_1 ;
+
+    putfield $fieldInt ;
+
     return ;
 

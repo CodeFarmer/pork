@@ -46,4 +46,16 @@ public class NothingTest
         assertTrue(sample.returnThis() == sample);
     }
 
+    public void testField() {
+        Sample sample = new Sample();
+        sample.setIntField(6);
+        assertTrue(sample.fieldInt == 6);
+        sample.setIntField(247);
+        assertTrue(sample.fieldInt == 247);
+    }
+
+    public void testStaticInitializedField() {
+        assertTrue(Sample.HELLO_WORLD == "Hello, World");
+    }
+
 }

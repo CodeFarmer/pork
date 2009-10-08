@@ -108,6 +108,7 @@ stackLine returns [size] : STACK s=INTEGER lineEnd { $size = int($s.text, 16) ; 
 localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
 
 /* FIXME void fields are legal */
+/* NOTE that fields automatically get added to the symbol table */
 fieldLine returns [fieldName, fieldDesc, accessMask]
 @init {
     $accessMask = 0;
@@ -115,6 +116,8 @@ fieldLine returns [fieldName, fieldDesc, accessMask]
     : FIELD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName f=WORD lineEnd 
     { 
         currentClass.field($f.text, $t.desc, $accessMask) ;
+        const = currentClass.fieldConstant(currentClass.name, $f.text, $t.desc) ;
+        currentClassSymbols[$f.text] = [const >> 8 & 0xff, const & 0xff];
     } ;
 
 methodLine returns [methodName, methodDesc, accessMask]

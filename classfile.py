@@ -91,13 +91,15 @@ def methodDescriptor(returnType = DESC_VOID, fieldTypes = []):
 def getPos(stream):
     return '0x' + format(stream.tell(), 'x')
 
-class JavaClass:
+class JavaClass(object):
 
     def __init__(self, classname, superclass = 'java.lang.Object', access_flags = ACC_PUBLIC):
 
         assert isinstance(classname, basestring)
 
         log.debug('JavaClass (' + `classname` + ', ' + `superclass` + ', ' + `access_flags` + ')')
+
+        self.name = classname
 
         self.constant_pool = []
 
