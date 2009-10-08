@@ -5,10 +5,11 @@ options {
     filter=true;
 }
 
-CLASS    : '.class' ;
-METHOD   : '.method' ;
-STACK    : '.stack' ;
-LOCAL    : '.local' ;
+CLASS    : '.class'    ;
+METHOD   : '.method'   ;
+FIELD    : '.field'    ;
+STACK    : '.stack'    ;
+LOCAL    : '.local'    ;
 CONSTANT : '.constant' ;
 
 ARRAYDIM : '[]' ;

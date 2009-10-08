@@ -75,7 +75,7 @@ def writeClasses():
 /* Parser */
 
 porkfile  : classDef+ { writeClasses() ; } ;
-classDef  : classLine constantLine* methodDef+ ;
+classDef  : classLine constantLine* fieldLine* methodDef+ ;
 
 /* this will change! just getting method constants working to start with */
 /* FIXME */
@@ -107,6 +107,15 @@ methodDef returns [meth]
 stackLine returns [size] : STACK s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
 localLine returns [size] : LOCAL s=INTEGER lineEnd { $size = int($s.text, 16) ; } ;
 
+/* FIXME void fields are legal */
+fieldLine returns [fieldName, fieldDesc, accessMask]
+@init {
+    $accessMask = 0;
+}
+    : FIELD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName f=WORD lineEnd 
+    { 
+        currentClass.field($f.text, $t.desc, $accessMask) ;
+    } ;
 
 methodLine returns [methodName, methodDesc, accessMask]
 @init {

@@ -1,8 +1,13 @@
 .class org.joellercoaster.pork.Sample ;
 
+
 .constant superInit java.lang.Object void <init>() ;
 .constant println   java.io.PrintStream void println(java.lang.String) ;
 .constant sysOut    java.lang.System java.io.PrintStream out ;
+
+
+.field public static java.lang.String HELLO_WORLD;
+
 
 .method static void returnNothing() ;
 
