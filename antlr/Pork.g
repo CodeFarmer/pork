@@ -101,7 +101,7 @@ methodArgs returns [args]
 @init { $args = [] }
     : LEFTBRACKET ((a=typeName { args.append(arrayDescriptor($a.desc, $a.arrayDim)) }) (COMMA b=typeName { args.append(arrayDescriptor($b.desc, $b.arrayDim)) })* )? RIGHTBRACKET ;
 
-methodName : WORD;
+methodName : WORD | INIT ;
 
 lineEnd : SEMICOLON ;
 

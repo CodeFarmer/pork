@@ -36,6 +36,8 @@ fragment HEX_PREFIX : '0x' ;
 
 fragment QUOTE        : '"';
 
+INIT : '<init>' ;
+
 STRING_LITERAL : QUOTE .* QUOTE ;
 
 /* TODO return the actual integer, and allow non-hex (not in that order) */
