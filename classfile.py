@@ -192,10 +192,11 @@ class JavaClass:
         self.constant_pool.append(CONSTANT_NameAndType_info(nameIndex, typeIndex))
         return index + 1
 
-    def methodConstant(self, className, methodName, methodTypeDescriptor):
+    def methodConstant(self, className, methodName, methodSignature):
 
         classIndex = self.classConstant(className)
-        nameAndTypeIndex = self.nameAndTypeConstant(methodName, methodDescriptor);
+        nameAndTypeIndex = self.nameAndTypeConstant(methodName, methodSignature);
+        index = 0
 
         for const in self.constant_pool:
             if const.tag == CONSTANT_Methodref and const.value == classIndex and const.secondValue == nameAndTypeIndex:
@@ -203,7 +204,7 @@ class JavaClass:
             else:
                 index += 1
 
-        self.constant_pool.append(CONSTANT_Methodref_info(nameIndex, typeIndex))
+        self.constant_pool.append(CONSTANT_Methodref_info(classIndex, nameAndTypeIndex))
         return index + 1
 
 
@@ -350,7 +351,7 @@ class ConstantReferencePairTableEntry(ConstantTableEntry):
         ConstantTableEntry.__init__(self, tag)
         self.value = index1
         self.secondValue = index2
-        self.bytes = u2(index) + u2(index2)
+        self.bytes = u2(index1) + u2(index2)
         
 
 class CONSTANT_NameAndType_info(ConstantReferencePairTableEntry):
