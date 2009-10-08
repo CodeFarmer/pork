@@ -80,20 +80,35 @@ classDef  : classLine constantLine* fieldLine* methodDef+ ;
 /* this will change! just getting method constants working to start with */
 /* FIXME */
 constantLine
-    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.index ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.index ; }));
+    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.index ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.index ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.index ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.index ; }));
 
 classMethod returns [index]
     : c=className m=methodSignature lineEnd
     {
         const = currentClass.methodConstant($c.text, $m.methodName, $m.methodDesc) ;
-        $index = [const >> 8 & 0xff, const & 0xff];
+        $index = [const >> 8 & 0xff, const & 0xff] ;
     };
 
 classField returns [index]
     : c=className t=typeName w=WORD lineEnd
     {
-        const = currentClass.fieldConstant($c.text, $w.text, arrayDescriptor($t.desc, $t.arrayDim));
-        $index = [const >> 8 & 0xff, const & 0xff];
+        const = currentClass.fieldConstant($c.text, $w.text, arrayDescriptor($t.desc, $t.arrayDim)) ;
+        $index = [const >> 8 & 0xff, const & 0xff] ;
+    };
+
+classInteger returns [index]
+    : i=integer lineEnd
+    {
+        const = currentClass.integerConstant($i.intVal) ;
+        $index = [const & 0xff] ;
+    };
+
+classString returns [index]
+    : s=STRING_LITERAL lineEnd
+    {
+        const = currentClass.stringConstant(s.text[1:-1]) ;
+        $index = [const & 0xff] ;
+
     };
 
 /*

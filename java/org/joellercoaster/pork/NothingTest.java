@@ -41,9 +41,19 @@ public class NothingTest
         assertEquals("This is a String literal", Sample.getString());
     }
 
+    /* this one is exactly the same under the hood as the previous test,
+       but it's declared differently in the porkfile */
+    public void testStaticStringFromConstantPool() {
+        assertEquals("feep", Sample.getAnotherString());
+    }
+
     public void testNonstaticMethod() {
         Sample sample = new Sample();
         assertTrue(sample.returnThis() == sample);
+    }
+
+    public void testStaticIntegerFromConstant() {
+        assertTrue(Sample.returnTwentyFive() == 25);
     }
 
     public void testField() {
