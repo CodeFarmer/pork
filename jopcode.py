@@ -86,7 +86,9 @@ def byteString(name, args):
     op = getOperation(name)
 
     if not len(args) == op.operands:
-        raise ArgumentException(name, args, 'expected ' + `op.operands` + ' operands, got ' + `len(args)`)
+        message = name + ' expected ' + `op.operands` + ' operands, got '  + `len(args)`
+        log.warn(message)
+        raise ArgumentException(name, args, message)
 
     ret = u1(op.opcode)
     for arg in args:
