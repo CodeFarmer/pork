@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-from bytes import u1
-
 import logging as log
 
 class Op(object):
@@ -30,32 +28,6 @@ class UnknownOperation(Exception):
     def __str__(self):
         return self.name
 
-class ArgumentException(Exception):
-
-    def __init__(self, name, args, mess=None):
-
-        assert isinstance(name, basestring)
-        self.name = name
-        self.args = args
-        self.mess = mess
-
-    # FIXME this doesn't appear to be working correctly
-    def __str__(self):
-
-        ret = self.name + ' ( '
-        for arg in self.args:
-            ret += arg
-            ret += ' '
-
-        ret += ')'
-
-        if self.mess:
-
-            ret += ' : '
-            ret += self.mess
-
-        return ret
-
 
 OPERATIONS = {}
 OPCODES = {}
@@ -77,24 +49,6 @@ def getOperation(name):
         raise UnknownOperation(name)
 
     return OPERATIONS[name]
-
-
-def byteString(name, args):
-
-    # log.debug('byteString(' + name + ', ' + `args` + ')')
-    
-    op = getOperation(name)
-
-    if not len(args) == op.operands:
-        message = name + ' expected ' + `op.operands` + ' operands, got '  + `len(args)`
-        log.warn(message)
-        raise ArgumentException(name, args, message)
-
-    ret = u1(op.opcode)
-    for arg in args:
-        ret += u1(arg)
-
-    return ret
 
 
 Op('aaload',          0x32, 0, -1)

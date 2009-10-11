@@ -22,7 +22,7 @@ from classfile import arrayDescriptor, fieldDescriptor, methodDescriptor
 from classfile import ACC_PUBLIC, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
-from jopcode import byteString ;
+from compiler import buildMethodBody, Instruction, Symbol
 
 from PorkLexer import PorkLexer
 
@@ -35,7 +35,7 @@ def dump(o):
 # each parse can contain multiple classDefs, optionally intermingled
 classDefs = {}
 currentClass = None
-currentClassSymbols = {}
+currentClassSymbols = None
 
 def classDef(className):
 
@@ -71,8 +71,6 @@ def writeClasses():
         # TODO allow parser to be configured properly
 
 }
-
-/* Parser */
 
 porkfile  : classDef+ { writeClasses() ; } ;
 classDef  : classLine constantLine* fieldLine* methodDef+ ;
@@ -116,8 +114,11 @@ classString returns [index]
  * guess through static analysis
  */
 methodDef returns [meth]
-@init { body = '' }
-    : m=methodLine s=stackLine l=localLine (op=operation { body += $op.bytes ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, body)]) ; } ;
+@init { 
+    operations = [] ;
+    labels = {} ;
+}
+    : m=methodLine s=stackLine l=localLine (op=operation { operations.append($op.op) ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels))]) ; } ;
 
 stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
 localLine returns [size] : LOCAL s=integer lineEnd { $size = $s.intVal ; } ;
@@ -176,16 +177,16 @@ accessClause returns [mask]
     : ((A_STATIC { $mask |= ACC_STATIC ; }) | (A_PUBLIC { $mask |= ACC_PUBLIC ; }))+ ; /* obviously more go here */
 
 
-operation returns [bytes]
+operation returns [op]
 @init { args = [] }
     : mnemonic=WORD
-      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbol { args += $symb.index ; }) )* 
-      lineEnd { $bytes = byteString($mnemonic.text, args) ; } ;
+      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbol { args.append(Symbol($symb.name)) ; }) )* 
+      lineEnd { $op = Instruction($mnemonic.text, args) ; } ;
 
 
 /* FIXME write a proper error message for this */
 /* This returns a two-byte list */
-symbol returns [index] : DOLLAR w=WORD { $index = currentClassSymbols[$w.text] ;} ;
+symbol returns [name] : DOLLAR w=WORD { $name=$w.text ;} ;
 
 /* accessModifier : AM_PUBLIC | AM_PRIVATE | AM_PROTECTED | AM_STATIC | AM_FINAL | AM_INTERFACE | AM_ABSTRACT ; */
 
