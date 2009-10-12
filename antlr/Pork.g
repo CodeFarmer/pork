@@ -39,7 +39,7 @@ currentClassSymbols = None
 
 def classDef(className):
 
-    global currentClass
+    global currentClass, currentClassSymbols
 
     if not classDefs.has_key(className):
         ret = JavaClass(className)
