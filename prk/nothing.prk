@@ -153,7 +153,7 @@
 .method static java.lang.String recognizeZero(int) ;
 
 .stack 1 ;
-.local 1;
+.local 1 ;
 
     iload_0 ;
 
@@ -166,4 +166,5 @@ returnZeroString:
 
     ldc "Zero!" ;
     areturn;
+
 

@@ -1,0 +1,20 @@
+.class org.joellercoaster.pork.NegativeBranchOffset ;
+
+.method static int lowestMultipleGreaterThanTen(int) ;
+
+.stack 3 ;
+.local 1 ;
+
+    iload_0 ;
+
+addAnother:
+
+    iload_0 ;
+    iadd ;
+
+    dup ;
+    bipush 10 ;
+    if_icmple @addAnother ;
+
+    ireturn ;
+
