@@ -33,7 +33,7 @@ class ArgumentException(Exception):
         return ret
 
 
-class UnkownSymbol(Exception):
+class UnknownSymbol(Exception):
 
     def __init__(self, name):
         self.name = name
@@ -41,7 +41,7 @@ class UnkownSymbol(Exception):
     def __str__(self):
         return name
 
-class UnknownLabel(UnkownSymbol):
+class UnknownLabel(UnknownSymbol):
     def __init__(self, name):
         UnknownSymbol(self, name)
 
@@ -77,7 +77,7 @@ class Instruction(object):
             if isinstance(arg, Label):
 
                 if not labelTable.has_key(arg):
-                    raise UnkownLabel(arg)
+                    raise UnknownLabel(arg)
 
                 ret += u1(labelTable[arg])
 
@@ -86,7 +86,7 @@ class Instruction(object):
                 name = arg.name
                 if not symbolTable.has_key(name):
                     log.warn('Unknown symbol ' + name + ': ' + `symbolTable`)
-                    raise UnkownSymbol(name)
+                    raise UnknownSymbol(name)
 
                 log.debug('resolving symbol $' + name + ' to ' + `symbolTable[name]` + '(' + `symbolTable` + ')')
                 for b in symbolTable[name]: # list of bytes
@@ -114,7 +114,7 @@ def buildMethodBody(instructions, symbols, labels):
                 name = arg.name
 
                 if not labels.has_key(name):
-                    raise UnkownLabel(name)
+                    raise UnknownLabel(name)
 
                 newargs += labels[name]
 
@@ -123,7 +123,7 @@ def buildMethodBody(instructions, symbols, labels):
                 name = arg.name
                 if not symbols.has_key(name):
                     log.warn('Unknown symbol ' + name + ': ' + `symbols`)
-                    raise UnkownSymbol(name)
+                    raise UnknownSymbol(name)
 
                 log.debug('resolving symbol $' + name + ' to ' + `symbols[name]`)
                 newargs += symbols[name]
