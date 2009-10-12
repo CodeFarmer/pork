@@ -68,4 +68,9 @@ public class NothingTest
         assertEquals("Hello, world.", Sample.HELLO_WORLD);
     }
 
+    public void testStaticMethodWithLabelBranch() {
+        assertEquals("Zero!",     Sample.recognizeZero(0));
+        assertEquals("Not zero.", Sample.recognizeZero(1));
+    }
+
 }

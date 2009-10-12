@@ -150,3 +150,20 @@
 
     return ;
 
+.method static java.lang.String recognizeZero(int) ;
+
+.stack 1 ;
+.local 1;
+
+    iload_0 ;
+
+    ifeq @returnZeroString ;
+
+    ldc "Not zero." ;
+    areturn ;
+
+returnZeroString:
+
+    ldc "Zero!" ;
+    areturn;
+
