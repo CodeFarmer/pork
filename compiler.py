@@ -43,7 +43,7 @@ class UnknownSymbol(Exception):
 
 class UnknownLabel(UnknownSymbol):
     def __init__(self, name):
-        UnknownSymbol(self, name)
+        UnknownSymbol.__init__(self, name)
 
 
 class Symbol(object):
@@ -52,7 +52,7 @@ class Symbol(object):
 
 class Label(Symbol):
     def __init__(self, name):
-        Symbol(self, name)
+        Symbol.__init__(self, name)
 
 
 class Instruction(object):
@@ -97,10 +97,21 @@ class Instruction(object):
 
         return ret
 
+# This is crude; FIXME
+def calculateLabelOffset(name, instructionsSoFar):
+
+   offset = reduce(lambda x, y: x + y.op.operands + 1, instructionsSoFar, 0)
+
+   log.debug('Resolving label ' + `name` + ' to ' + `offset`)
+   return offset;
+   
+
 
 def buildMethodBody(instructions, symbols, labels):
 
     ret = ''
+    pc = 0
+
     for instruction in instructions:
 
         # first, convert symbol references to byte groups
@@ -114,9 +125,13 @@ def buildMethodBody(instructions, symbols, labels):
                 name = arg.name
 
                 if not labels.has_key(name):
+                    log.warn('Unknown label ' + `name` + ': ' + `labels`)
                     raise UnknownLabel(name)
 
-                newargs += labels[name]
+                branchOffset = labels[name] - pc
+
+                newargs.append(branchOffset >> 8 & 0xff)
+                newargs.append(branchOffset      & 0xff)
 
             elif isinstance(arg, Symbol):
 
@@ -135,6 +150,9 @@ def buildMethodBody(instructions, symbols, labels):
         # check lengths
 
         op = instruction.op
+
+        pc += 1 ;
+        pc += op.operands ;
 
         if not len(newargs) == op.operands:
             message = op.name + ' expected ' + `op.operands` + ' operands, got '  + `len(newargs)`

@@ -22,7 +22,8 @@ from classfile import arrayDescriptor, fieldDescriptor, methodDescriptor
 from classfile import ACC_PUBLIC, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
-from compiler import buildMethodBody, Instruction, Symbol
+from compiler import buildMethodBody, calculateLabelOffset
+from compiler import Instruction, Label, Symbol
 
 from PorkLexer import PorkLexer
 
@@ -56,7 +57,7 @@ CLASS_OUTPUT_DIR = 'classes/'
 def writeClasses():
     
     for className in classDefs.keys():
-        log.debug('writing class ' + className)
+        log.info('writing class ' + className)
 
         # make directory from classname
         path = className.replace('.', '/')
@@ -118,7 +119,7 @@ methodDef returns [meth]
     operations = [] ;
     labels = {} ;
 }
-    : m=methodLine s=stackLine l=localLine (op=operation { operations.append($op.op) ; } )+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels))]) ; } ;
+    : m=methodLine s=stackLine l=localLine ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels))]) ; } ;
 
 stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
 localLine returns [size] : LOCAL s=integer lineEnd { $size = $s.intVal ; } ;
@@ -180,14 +181,20 @@ accessClause returns [mask]
 operation returns [op]
 @init { args = [] }
     : mnemonic=WORD
-      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbol { args.append(Symbol($symb.name)) ; }) )* 
+      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(Symbol($symb.name)) ; }) | (la=labelref { args.append(Label($la.name)) ; }) )* 
       lineEnd { $op = Instruction($mnemonic.text, args) ; } ;
 
 
 /* FIXME write a proper error message for this */
 /* This returns a two-byte list */
-symbol returns [name] : DOLLAR w=WORD { $name=$w.text ;} ;
+symbolref returns [name] : DOLLAR w=WORD { $name=$w.text ;} ;
+
+/* FIXME seriously consider ditching this syntax and just using symbols */
+labelref returns [name] : AT w=WORD { $name=$w.text ; } ;
 
 /* accessModifier : AM_PUBLIC | AM_PRIVATE | AM_PROTECTED | AM_STATIC | AM_FINAL | AM_INTERFACE | AM_ABSTRACT ; */
+
+/* FIXME implement me! */
+label returns [name]: w=WORD COLON { $name=$w.text ;} ;
 
 
