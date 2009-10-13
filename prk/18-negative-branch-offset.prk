@@ -5,7 +5,7 @@
 .stack 3 ;
 .local 1 ;
 
-    iload_0 ;
+    iconst_0 ;
 
 addAnother:
 

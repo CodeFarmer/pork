@@ -181,7 +181,7 @@ accessClause returns [mask]
 operation returns [op]
 @init { args = [] }
     : mnemonic=WORD
-      (arg=(INTEGER { args.append(int($arg.text, 16)) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(Symbol($symb.name)) ; }) | (la=labelref { args.append(Label($la.name)) ; }) )* 
+      ((iarg=integer { args.append($iarg.intVal) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(Symbol($symb.name)) ; }) | (la=labelref { args.append(Label($la.name)) ; }) )* 
       lineEnd { $op = Instruction($mnemonic.text, args) ; } ;
 
 

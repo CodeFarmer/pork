@@ -15,7 +15,7 @@ public class Bug_18_NegativeBranchOffsetTest
 
     public void testStaticMethodWithBackwardsLabelBranch() {
         assertTrue(NegativeBranchOffset.lowestMultipleGreaterThanTen(3) == 12);
-        assertTrue(NegativeBranchOffset.lowestMultipleGreaterThanTen(13) == 26); // don't ask
+        assertTrue(NegativeBranchOffset.lowestMultipleGreaterThanTen(13) == 13); // don't ask
     }
 
 } 

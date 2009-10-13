@@ -130,9 +130,17 @@ def buildMethodBody(instructions, symbols, labels):
 
                 branchOffset = labels[name] - pc
 
-                newargs.append(branchOffset >> 8 & 0xff)
+
+                if branchOffset < 0:
+                    
+                    # agh, nail down two's compliment signed 16-bit
+                    # TODO find out if there's a better way in Python?
+                    branchOffset = ((~(-branchOffset)) + 1) & 0xffff
+
+                newargs.append((branchOffset >> 8) & 0xff)
                 newargs.append(branchOffset      & 0xff)
 
+ 
             elif isinstance(arg, Symbol):
 
                 name = arg.name
@@ -140,7 +148,6 @@ def buildMethodBody(instructions, symbols, labels):
                     log.warn('Unknown symbol ' + name + ': ' + `symbols`)
                     raise UnknownSymbol(name)
 
-                log.debug('resolving symbol $' + name + ' to ' + `symbols[name]`)
                 newargs += symbols[name]
 
             else: # it's a byte literal
