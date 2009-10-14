@@ -13,14 +13,16 @@ JUNIT_JAR = $(JUNIT_HOME)/junit.jar
 JAVAC_OPTS=-d $(CLASS_DIR) -cp $(CLASS_DIR)\;$(JUNIT_JAR)
 
 clean : 
-	rm -rf *.pyc classes/org/ reference-classes/* *.tokens *Lexer.py *Parser.py
+	rm -rf *.pyc classes/org/ reference-classes/* *.tokens *Lexer.py Pork.py
 
-lexer : $(ANTLR_DIR)/PorkLexer.g
+PorkLexer.py : $(ANTLR_DIR)/PorkLexer.g
 	$(ANTLR) $(ANTLR_OPTS) $(ANTLR_DIR)/PorkLexer.g
 
-parser : lexer $(ANTLR_DIR)/Pork.g
+Pork.py : $(ANTLR_DIR)/Pork.g PorkLexer.py
 	$(ANTLR) $(ANTLR_OPTS) $(ANTLR_DIR)/Pork.g
 
+parser : Pork.py
+	
 pork :
 	cat prk/*.prk | python Pork.py --rule=porkfile
 
