@@ -1,7 +1,7 @@
 CLASS_DIR=classes
 
 ANTLR_HOME=`cygpath -w /c/DevTools/antlr-3.1.3/lib`
-JUNIT_HOME=`cygpath -w /c/DevTools/apache-ant-1.7.1/lib`
+JUNIT_HOME=`cygpath -w /c/DevTools/junit3.8.2`
 
 ANTLR=java -cp $(ANTLR_HOME)/antlr-3.1.3.jar org.antlr.Tool
 
