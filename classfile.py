@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from io import IOBase
-import logging as log
+import logging
 import struct
 
 from bytes import u1, u2, u4
@@ -55,6 +55,11 @@ CONSTANT_Utf8               =  1
 
 ATTR_CODE           = 'Code'
 ATTR_CONSTANT_VALUE = 'ConstantValue'
+
+
+log = logging.getLogger('classfile')
+log.setLevel(logging.INFO)
+
 
 # FIXME arrayDimension never gets used by the parser, remove?
 def fieldDescriptor(classname, arrayDimension = 0):

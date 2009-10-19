@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-import logging as log
 
 class Op(object):
     

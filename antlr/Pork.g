@@ -12,7 +12,7 @@ options {
 @header {
 
 from io import FileIO
-import logging as log
+import logging
 import os
 import sys
 import traceback
@@ -28,7 +28,10 @@ from compiler import Instruction, Label, Symbol
 from PorkLexer import PorkLexer
 
 # DEBUG
-log.basicConfig(level=log.INFO)
+logging.basicConfig()
+log = logging.getLogger('parser')
+log.setLevel(logging.INFO)
+
 def dump(o):
     if o:
         log.debug('DUMP: ' + `o`)

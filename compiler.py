@@ -1,9 +1,12 @@
 #! /usr/bin/env python
 
-import logging as log 
+import logging
 
 from bytes import u1
 from jopcode import getOperation
+
+log = logging.getLogger('compiler')
+log.setLevel(logging.INFO)
 
 
 class ArgumentException(Exception):
