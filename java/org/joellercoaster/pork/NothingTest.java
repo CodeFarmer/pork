@@ -73,8 +73,12 @@ public class NothingTest
         assertEquals("Not zero.", Sample.recognizeZero(1));
     }
 
-    public void testAutoinitializedField() {
+    public void testAutoinitializedIntField() {
         assertEquals(515, Sample.constantInt);
+    }
+
+    public void testAutoinitializedStringField() {
+        assertEquals("goo", Sample.constantString);
     }
 
 }

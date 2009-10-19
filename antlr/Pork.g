@@ -28,7 +28,7 @@ from compiler import Instruction, Label, Symbol
 from PorkLexer import PorkLexer
 
 # DEBUG
-log.basicConfig(level=log.DEBUG)
+log.basicConfig(level=log.INFO)
 def dump(o):
     if o:
         log.debug('DUMP: ' + `o`)
@@ -133,7 +133,7 @@ fieldLine returns [fieldName, fieldDesc, accessMask, val]
     $accessMask = 0;
     $val = None;
 }
-    : FIELD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName f=WORD (EQUALS v=integer { $val = v; })? lineEnd 
+    : FIELD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName f=WORD (EQUALS ((v=integer { $val = v; }) | (s=STRING_LITERAL { $val=$s.text[1:-1]; })))? lineEnd 
     { 
         attribs = [] ;
         if $val:

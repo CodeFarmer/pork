@@ -9,10 +9,11 @@
 .constant feep "feep" ;
 
 
-.field public static java.lang.String HELLO_WORLD;
-.field public int fieldInt;
+.field public static java.lang.String HELLO_WORLD ;
+.field public int fieldInt ;
 
-.field public static int constantInt = 515;
+.field public static              int constantInt    = 515 ;
+.field public static java.lang.String constantString = "goo" ;
 
 
 .method static void returnNothing() ;
