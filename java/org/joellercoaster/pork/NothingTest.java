@@ -1,5 +1,7 @@
 package org.joellercoaster.pork;
 
+import java.lang.reflect.Field;
+
 import junit.framework.TestCase;
 
 import org.joellercoaster.pork.Sample;
@@ -79,6 +81,23 @@ public class NothingTest
 
     public void testAutoinitializedStringField() {
         assertEquals("goo", Sample.constantString);
+    }
+
+
+    public void testFinalField()
+        throws NoSuchFieldException {
+
+        assertEquals("goo", Sample.finString);
+
+        Class clazz = Sample.class ;
+        Field field = clazz.getDeclaredField("finString");
+        try {
+            field.set(null, "ick");
+            fail("Should have thrown exception trying to write to a final field");
+        }
+        catch (IllegalAccessException iae) {
+        }
+
     }
 
 }

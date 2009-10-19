@@ -62,6 +62,7 @@ T_VOID   : 'void'   ;
 
 A_PUBLIC : 'public' ;
 A_STATIC : 'static' ;
+A_FINAL  : 'final'  ;
 
 WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
 
