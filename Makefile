@@ -29,6 +29,6 @@ pork :
 tests : pork
 	javac $(JAVAC_OPTS) java/org/joellercoaster/pork/*.java java/org/joellercoaster/pork/test/JUnit.java
 
-test : tests
+test : parser tests
 	java -cp $(CLASS_DIR)\;$(JUNIT_JAR) org.joellercoaster.pork.test.JUnit
 
