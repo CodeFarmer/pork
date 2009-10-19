@@ -34,6 +34,9 @@ DESC_SHORT   = 'S'
 DESC_BOOLEAN = 'Z'
 DESC_VOID    = 'V'
 
+# And this one is handy
+DESC_STRING  = 'Ljava/lang/String;'
+
 # to start with, String and Integer constants will be implemented and that's
 # all:
 
@@ -44,13 +47,14 @@ CONSTANT_Methodref          = 10
 #CONSTANT_InterfaceMethodRef = 11
 CONSTANT_String             =  8
 CONSTANT_Integer            =  3
-#CONSTANT_Float              =  4
-#CONSTANT_Long               =  5
-#CONSTANT_Double             =  6
+CONSTANT_Float              =  4
+CONSTANT_Long               =  5
+CONSTANT_Double             =  6
 CONSTANT_NameAndType        = 12
 CONSTANT_Utf8               =  1
 
-ATTR_CODE = 'Code'
+ATTR_CODE           = 'Code'
+ATTR_CONSTANT_VALUE = 'ConstantValue'
 
 # FIXME arrayDimension never gets used by the parser, remove?
 def fieldDescriptor(classname, arrayDimension = 0):
@@ -90,6 +94,17 @@ def methodDescriptor(returnType = DESC_VOID, fieldTypes = []):
 
 def getPos(stream):
     return '0x' + format(stream.tell(), 'x')
+
+
+class ClassFormatException(Exception):
+
+    def __init__(self, name):
+        assert isinstance(name, basestring)
+        self.name = name
+
+    def __str__(self):
+        return self.name
+
 
 class JavaClass(object):
 
@@ -452,6 +467,33 @@ class Code_attribute(object):
         stream.write(u2(len(self.attributes)))
         for attribute in self.attributes:
             attribute.write(stream)
+
+# This is for static constant field initializers
+# http://java.sun.com/docs/books/jvms/second_edition/html/ClassFile.doc.html#1405
+
+SIZE_OF_CONSTANT_ATTRIBUTE = 2
+class ConstantValue_attribute(object):
+
+    # long float double integer or string constants only
+    # must specify type as it might not be obvious from the literal... or should it be?
+    # subclass for consistency's sake?
+    def __init__(self, owningClass, typeDesc, value):
+        
+        if typeDesc == DESC_STRING:
+            self.constant_index = owningClass.stringConstant(value)
+        elif typeDesc == DESC_INT:
+            self.constant_index = owningClass.integerConstant(value)
+        elif typeDesc == DESC_FLOAT or typeDesc == DESC_LONG or typeDesc == DESC_DOUBLE:
+            raise ClassFormatException("NotImplementedYet")
+        else:
+            raise ClassFormatException("ConstantValue attributes must be of type String, Integer (or Long), or Float (or Double). Unsupported type " + `typeDesc`)
+
+        self.name_index = owningClass.utf8Constant(ATTR_CONSTANT_VALUE)
+
+    def write(self, stream):
+        stream.write(u2(self.name_index))
+        stream.write(u4(SIZE_OF_CONSTANT_ATTRIBUTE))
+        stream.write(u2(self.constant_index))
 
 
 # fields

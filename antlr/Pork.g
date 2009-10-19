@@ -17,7 +17,7 @@ import os
 import sys
 import traceback
 
-from classfile import Code_attribute, JavaClass
+from classfile import Code_attribute, ConstantValue_attribute, JavaClass
 from classfile import arrayDescriptor, fieldDescriptor, methodDescriptor
 from classfile import ACC_PUBLIC, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
@@ -128,13 +128,19 @@ integer returns [intVal] : (s=HEX_INTEGER {$intVal = int($s.text, 16) ;}) | (s=D
 
 /* FIXME void fields are legal */
 /* NOTE that fields automatically get added to the symbol table */
-fieldLine returns [fieldName, fieldDesc, accessMask]
+fieldLine returns [fieldName, fieldDesc, accessMask, val]
 @init {
     $accessMask = 0;
+    $val = None;
 }
-    : FIELD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName f=WORD lineEnd 
+    : FIELD (acc=accessClause { $accessMask = $acc.mask ; })? t=typeName f=WORD (EQUALS v=integer { $val = v; })? lineEnd 
     { 
-        currentClass.field($f.text, $t.desc, $accessMask) ;
+        attribs = [] ;
+        if $val:
+            attribs = [ConstantValue_attribute(currentClass, $t.desc, $val)] ;
+
+        currentClass.field($f.text, $t.desc, $accessMask, attribs) ;
+        
         const = currentClass.fieldConstant(currentClass.name, $f.text, $t.desc) ;
         currentClassSymbols[$f.text] = [const >> 8 & 0xff, const & 0xff];
     } ;

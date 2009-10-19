@@ -23,6 +23,7 @@ RIGHTBRACKET : ')' ;
 COMMA        : ',' ;
 DOLLAR       : '$' ;
 AT           : '@' ;
+EQUALS       : '=' ;
 
 /*
 AM_PUBLIC    : 'public' ;
