@@ -76,7 +76,7 @@ def writeClasses():
 
 }
 
-porkfile  : classDef+ { writeClasses() ; } ;
+porkfile  : classDef+ ;
 classDef  : classLine constantLine* fieldLine* methodDef+ ;
 
 /* this will change! just getting method constants working to start with */

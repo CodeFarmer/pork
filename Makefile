@@ -24,7 +24,7 @@ Pork.py : $(ANTLR_DIR)/Pork.g PorkLexer.py
 parser : Pork.py
 	
 pork :
-	cat prk/*.prk | python pjc.py --rule=porkfile
+	python pjc.py prk/*.prk
 
 tests : pork
 	javac $(JAVAC_OPTS) java/org/joellercoaster/pork/*.java java/org/joellercoaster/pork/test/JUnit.java
