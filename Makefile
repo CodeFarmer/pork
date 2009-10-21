@@ -6,7 +6,7 @@ JUNIT_HOME=`cygpath -w /c/DevTools/junit3.8.2`
 ANTLR=java -cp $(ANTLR_HOME)/antlr-3.1.3.jar org.antlr.Tool
 
 ANTLR_DIR=antlr
-ANTLR_OPTS=-o .
+ANTLR_OPTS=-fo $(PWD)
 
 JUNIT_JAR = $(JUNIT_HOME)/junit.jar
 
