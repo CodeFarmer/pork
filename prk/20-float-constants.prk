@@ -1,0 +1,15 @@
+.class org.joellercoaster.pork.FloatConstant ;
+
+.constant pointOne       0.1 ;
+.constant pointTwoFive   0.25 ;
+.constant pointFive      0.5 ;
+.constant pointSevenFive 0.75 ;
+
+.method static float returnPointOne() ;
+
+.stack 1 ;
+.local 0 ;
+
+    ldc $pointOne ;
+    freturn ;
+
