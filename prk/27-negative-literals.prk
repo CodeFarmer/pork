@@ -1,0 +1,41 @@
+.class org.joellercoaster.pork.NegativeConstant ;
+
+.constant pointOne       0.1 ;
+.constant minusPointOne -0.1 ;
+.constant five           5   ;
+.constant minusFive     -5   ;
+
+.method static float returnPointOne() ;
+
+.stack 1 ;
+.local 0 ;
+
+    ldc $pointOne ;
+    freturn ;
+
+.method static float returnMinusPointOne() ;
+
+.stack 1 ;
+.local 0 ;
+
+    ldc $minusPointOne ;
+    freturn ;
+
+.method static int returnFive() ;
+
+.stack 1 ;
+.local 0;
+
+    ldc $five ;
+    ireturn ;
+
+
+.method static int returnMinusFive() ;
+
+.stack 1 ;
+.local 0;
+
+    ldc $minusFive ;
+    ireturn ;
+
+
