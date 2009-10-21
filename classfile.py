@@ -58,8 +58,13 @@ ATTR_CONSTANT_VALUE = 'ConstantValue'
 
 
 log = logging.getLogger('classfile')
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
+
+# debugging
+def getByteList(byteString):
+
+    return  map(lambda x: '{0:#x}'.format(x), struct.unpack('BBBB', byteString))
 
 # FIXME arrayDimension never gets used by the parser, remove?
 def fieldDescriptor(classname, arrayDimension = 0):
@@ -155,7 +160,7 @@ class JavaClass(object):
 
     def integerConstant(self, value):
 
-        index = 0;
+        index = 0
         integerValue = int(value)
 
         for const in self.constant_pool:
@@ -166,6 +171,21 @@ class JavaClass(object):
                 index += 1
 
         self.constant_pool.append(CONSTANT_Integer_info(integerValue))
+        return index + 1
+
+    def floatConstant(self, value):
+
+        index = 0
+        floatValue = float(value)
+
+        for const in self.constant_pool:
+
+            if const.tag == CONSTANT_Float and const.value == floatValue:
+                return index + 1
+            else:
+                index += 1
+
+        self.constant_pool.append(CONSTANT_Float_info(floatValue))
         return index + 1
 
     # FIXME refactor this and class and whatever to just switch on tag
@@ -354,6 +374,18 @@ class CONSTANT_Integer_info(ConstantTableEntry):
         self.value = value # int(value)
         self.bytes = u4(value)
 
+
+class CONSTANT_Float_info(ConstantTableEntry):
+    
+    def __init__(self, value):
+
+        assert isinstance(value, float)
+
+        ConstantTableEntry.__init__(self, CONSTANT_Float)
+
+        self.value = value
+        self.bytes = struct.pack('f', value)
+        log.debug('CONSTANT_Float_info containing ' + `value` + ': ' + value.hex() +' , bytes ' + `getByteList(self.bytes)`)
 
 # base class for the various magic string structures
 

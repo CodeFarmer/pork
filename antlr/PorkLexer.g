@@ -46,6 +46,8 @@ CLINIT : '<clinit>' ;
 
 STRING_LITERAL : QUOTE .* QUOTE ;
 
+FLOAT_LITERAL : DIGIT+ DOT DIGIT+ ;
+
 /* TODO return the actual integer, and allow non-hex (not in that order) */
 HEX_INTEGER : HEX_PREFIX (HEXDIGIT HEXDIGIT)+ ;
 DEC_INTEGER : DIGIT+ ;

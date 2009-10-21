@@ -82,7 +82,7 @@ classDef  : classLine constantLine* fieldLine* methodDef+ ;
 /* this will change! just getting method constants working to start with */
 /* FIXME */
 constantLine
-    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.index ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.index ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.index ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.index ; }));
+    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.index ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.index ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.index ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.index ; } )| (cf=classFloat { currentClassSymbols[$name.text] = $cf.index ; }));
 
 classMethod returns [index]
     : c=className m=methodSignature lineEnd
@@ -113,6 +113,13 @@ classString returns [index]
 
     };
 
+classFloat returns [index]
+    : f=float lineEnd
+    {
+        const = currentClass.floatConstant($f.floatVal) ;
+        $index = [const & 0xff] ;
+    };
+
 /*
  * TODO: make stackLine and localLine optional, and either allow defaults, or
  * guess through static analysis
@@ -128,6 +135,9 @@ stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
 localLine returns [size] : LOCAL s=integer lineEnd { $size = $s.intVal ; } ;
 
 integer returns [intVal] : (s=HEX_INTEGER {$intVal = int($s.text, 16) ;}) | (s=DEC_INTEGER {$intVal = int($s.text, 10) ;}) ;
+
+/* gets own section because we might want more than one float format */
+float returns [floatVal] : f=FLOAT_LITERAL { $floatVal = float($f.text) ; } ;
 
 /* FIXME void fields are legal */
 /* NOTE that fields automatically get added to the symbol table */
