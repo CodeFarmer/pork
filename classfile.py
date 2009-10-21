@@ -58,7 +58,7 @@ ATTR_CONSTANT_VALUE = 'ConstantValue'
 
 
 log = logging.getLogger('classfile')
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 
 # debugging
@@ -384,7 +384,9 @@ class CONSTANT_Float_info(ConstantTableEntry):
         ConstantTableEntry.__init__(self, CONSTANT_Float)
 
         self.value = value
-        self.bytes = struct.pack('f', value)
+
+        # discovery: Python packs floats counter-endian to java
+        self.bytes = struct.pack('f', value)[-1::-1]
         log.debug('CONSTANT_Float_info containing ' + `value` + ': ' + value.hex() +' , bytes ' + `getByteList(self.bytes)`)
 
 # base class for the various magic string structures

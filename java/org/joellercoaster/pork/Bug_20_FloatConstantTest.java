@@ -11,7 +11,9 @@ public class Bug_20_FloatConstantTest
     }
 
     public void testFloatLiteral() {
-        assertEquals(0.1, FloatConstant.returnPointOne());
+
+        assertEquals(0.1f, FloatConstant.returnPointOne());
+
     }
 
 }
