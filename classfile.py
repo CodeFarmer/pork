@@ -2,6 +2,7 @@
 
 from io import IOBase
 import logging
+from logging import DEBUG, INFO
 import struct
 
 from bytes import u1, u2, u4
@@ -58,7 +59,7 @@ ATTR_CONSTANT_VALUE = 'ConstantValue'
 
 
 log = logging.getLogger('classfile')
-log.setLevel(logging.INFO)
+log.setLevel(INFO)
 
 
 # debugging
@@ -122,7 +123,8 @@ class JavaClass(object):
 
         assert isinstance(classname, basestring)
 
-        log.debug('JavaClass (' + `classname` + ', ' + `superclass` + ', ' + `access_flags` + ')')
+        if log.getEffectiveLevel() <= DEBUG:
+            log.debug('JavaClass (' + `classname` + ', ' + `superclass` + ', ' + `access_flags` + ')')
 
         self.name = classname
 
@@ -303,7 +305,9 @@ class JavaClass(object):
         stream.write(u2(len(self.constant_pool) + 1))
 
         for constant in self.constant_pool:
-            log.debug('writing constant ' + `constant` + ' at ' + getPos(stream))
+
+            if log.getEffectiveLevel() <= DEBUG:
+                log.debug('writing constant ' + `constant` + ' at ' + getPos(stream))
             constant.write(stream)
 
         stream.write(u2(self.access_flags))
@@ -316,17 +320,25 @@ class JavaClass(object):
 
         stream.write(u2(len(self.fields)))
         for field in self.fields:
-            log.debug('writing field ' + `field`  + ' at ' + getPos(stream))
+            
+            if log.getEffectiveLevel() <= DEBUG:
+                log.debug('writing field ' + `field`  + ' at ' + getPos(stream))
             field.write(stream)
 
         stream.write(u2(len(self.methods)))
         for method in self.methods:
-            log.debug('writing method ' + `method` + ' at ' + getPos(stream))
+
+            if log.getEffectiveLevel() <= DEBUG:
+                log.debug('writing method ' + `method` + ' at ' + getPos(stream))
+
             method.write(stream)
         
         stream.write(u2(len(self.attributes)))
         for attribute in self.attributes:
-            log.debug('writing class attribute ' + `attribute` + ' at ' + getPos(stream))
+
+            if log.getEffectiveLevel() <= DEBUG:
+                log.debug('writing class attribute ' + `attribute` + ' at ' + getPos(stream))
+
             attribute.write(stream)
 
 
@@ -387,7 +399,9 @@ class CONSTANT_Float_info(ConstantTableEntry):
 
         # discovery: Python packs floats counter-endian to java
         self.bytes = struct.pack('f', value)[-1::-1]
-        log.debug('CONSTANT_Float_info containing ' + `value` + ': ' + value.hex() +' , bytes ' + `getByteList(self.bytes)`)
+
+        if log.getEffectiveLevel() <= DEBUG:
+            log.debug('CONSTANT_Float_info containing ' + `value` + ': ' + value.hex() +' , bytes ' + `getByteList(self.bytes)`)
 
 # base class for the various magic string structures
 
@@ -474,7 +488,8 @@ class Code_attribute(object):
 
     def __init__(self, owningClass, max_stack = 0, max_locals = 0, code = EMPTY_METHOD, exception_table = [], attributes = []):
 
-        log.debug('Code_attribute(' + `owningClass` + ', ' + `max_stack` + ', ' + `max_locals` + ', ' + `code` + ', ' + `exception_table` + ', ' + `attributes` + ')')
+        if log.getEffectiveLevel() <= DEBUG:
+            log.debug('Code_attribute(' + `owningClass` + ', ' + `max_stack` + ', ' + `max_locals` + ', ' + `code` + ', ' + `exception_table` + ', ' + `attributes` + ')')
 
         self.attribute_name_index = owningClass.utf8Constant(ATTR_CODE)
 
@@ -491,7 +506,8 @@ class Code_attribute(object):
 
     def write(self, stream):
 
-        log.debug('Writing ' + `self` + ' at ' + getPos(stream))
+        if log.getEffectiveLevel() <= DEBUG:
+            log.debug('Writing ' + `self` + ' at ' + getPos(stream))
         
         stream.write(u2(self.attribute_name_index))
         stream.write(u4(self.attribute_length))
@@ -541,7 +557,8 @@ class field_info(object):
     
     def __init__(self, owningClass, name, descriptor, access_flags, attributes):
 
-        log.debug('field_info(' + `owningClass` + ', ' + `name` + ', ' + `descriptor` + ', ' + `access_flags` + ', ' + `attributes` + ')')
+        if log.getEffectiveLevel() <= DEBUG:
+            log.debug('field_info(' + `owningClass` + ', ' + `name` + ', ' + `descriptor` + ', ' + `access_flags` + ', ' + `attributes` + ')')
         
         self.name_index       = owningClass.utf8Constant(name)
         self.descriptor_index = owningClass.utf8Constant(descriptor)

@@ -1,12 +1,13 @@
 #! /usr/bin/env python
 
 import logging
+from logging import DEBUG, INFO, ERROR
 
 from bytes import u1
 from jopcode import getOperation
 
 log = logging.getLogger('compiler')
-log.setLevel(logging.INFO)
+log.setLevel(INFO)
 
 
 class ArgumentException(Exception):
@@ -88,10 +89,14 @@ class Instruction(object):
 
                 name = arg.name
                 if not symbolTable.has_key(name):
-                    log.warn('Unknown symbol ' + name + ': ' + `symbolTable`)
+                    
+                    if log.getEffectiveLevel() <= ERROR:
+                        log.error('Unknown symbol ' + name + ': ' + `symbolTable`)
                     raise UnknownSymbol(name)
 
-                log.debug('resolving symbol $' + name + ' to ' + `symbolTable[name]` + '(' + `symbolTable` + ')')
+                if log.getEffectiveLevel() <= DEBUG:
+                    log.debug('resolving symbol $' + name + ' to ' + `symbolTable[name]` + '(' + `symbolTable` + ')')
+
                 for b in symbolTable[name]: # list of bytes
                     ret += u1(b)
                 
@@ -103,10 +108,12 @@ class Instruction(object):
 # This is crude; FIXME
 def calculateLabelOffset(name, instructionsSoFar):
 
-   offset = reduce(lambda x, y: x + y.op.operands + 1, instructionsSoFar, 0)
+    offset = reduce(lambda x, y: x + y.op.operands + 1, instructionsSoFar, 0)
 
-   log.debug('Resolving label ' + `name` + ' to ' + `offset`)
-   return offset;
+    if log.getEffectiveLevel() <= DEBUG:
+        log.debug('Resolving label ' + `name` + ' to ' + `offset`)
+
+    return offset;
    
 
 
@@ -128,7 +135,10 @@ def buildMethodBody(instructions, symbols, labels):
                 name = arg.name
 
                 if not labels.has_key(name):
-                    log.warn('Unknown label ' + `name` + ': ' + `labels`)
+
+                    if log.getEffectiveLevel() <= ERROR:
+                        log.error('Unknown label ' + `name` + ': ' + `labels`)
+
                     raise UnknownLabel(name)
 
                 branchOffset = labels[name] - pc
@@ -148,7 +158,10 @@ def buildMethodBody(instructions, symbols, labels):
 
                 name = arg.name
                 if not symbols.has_key(name):
-                    log.warn('Unknown symbol ' + name + ': ' + `symbols`)
+
+                    if log.getEffectiveLevel() <= ERROR:
+                        log.error('Unknown symbol ' + name + ': ' + `symbols`)
+
                     raise UnknownSymbol(name)
 
                 newargs += symbols[name]
@@ -166,7 +179,10 @@ def buildMethodBody(instructions, symbols, labels):
 
         if not len(newargs) == op.operands:
             message = op.name + ' expected ' + `op.operands` + ' operands, got '  + `len(newargs)`
-            log.warn(message)
+
+            if log.getEffectiveLevel() <= ERROR:
+                log.error(message)
+
             raise ArgumentException(op.name, newargs, message)
 
         # add bytes

@@ -13,6 +13,7 @@ options {
 
 from io import FileIO
 import logging
+from logging import DEBUG, INFO
 import os
 import sys
 import traceback
@@ -30,10 +31,10 @@ from PorkLexer import PorkLexer
 # DEBUG
 logging.basicConfig()
 log = logging.getLogger('parser')
-log.setLevel(logging.INFO)
+log.setLevel(INFO)
 
 def dump(o):
-    if o:
+    if o and log.getEffectiveLevel() <= DEBUG:
         log.debug('DUMP: ' + `o`)
 
 # each parse can contain multiple classDefs, optionally intermingled
@@ -60,7 +61,9 @@ CLASS_OUTPUT_DIR = 'classes/'
 def writeClasses():
     
     for className in classDefs.keys():
-        log.info('writing class ' + className)
+
+        if log.getEffectiveLevel() <= INFO:
+            log.info('writing class ' + className)
 
         # make directory from classname
         path = className.replace('.', '/')
