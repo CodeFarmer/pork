@@ -1,0 +1,13 @@
+.class org.joellercoaster.pork.UnusedConstants ;
+
+.constant A 1 ;
+.constant B 2 ;
+
+.method static void doNothing() ;
+
+.stack 1 ;
+.local 0 ;
+
+    ldc $A ;
+    return ;
+
