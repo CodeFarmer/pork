@@ -1,16 +1,16 @@
 CLASS_DIR=classes
 
-ANTLR_HOME=`cygpath -w /c/DevTools/antlr-3.1.3/lib`
-JUNIT_HOME=`cygpath -w /c/DevTools/junit3.8.2`
+ANTLR_HOME=$(HOME)/antlr-3.1.3/lib
+JUNIT_HOME=$(HOME)/junit3.8.2
 
 ANTLR=java -cp $(ANTLR_HOME)/antlr-3.1.3.jar org.antlr.Tool
 
 ANTLR_DIR=antlr
-ANTLR_OPTS=-fo $(PWD)
+ANTLR_OPTS=-fo "$(PWD)"
 
 JUNIT_JAR = $(JUNIT_HOME)/junit.jar
 
-JAVAC_OPTS=-d $(CLASS_DIR) -cp $(CLASS_DIR)\;$(JUNIT_JAR)
+JAVAC_OPTS=-d $(CLASS_DIR) -cp $(CLASS_DIR):$(JUNIT_JAR)
 
 clean : 
 	rm -rf *.pyc classes/org/ reference-classes/* *.tokens *Lexer.py Pork.py
@@ -30,5 +30,5 @@ tests : pork
 	javac $(JAVAC_OPTS) java/org/joellercoaster/pork/*.java java/org/joellercoaster/pork/test/JUnit.java
 
 test : parser tests
-	java -cp $(CLASS_DIR)\;$(JUNIT_JAR) org.joellercoaster.pork.test.JUnit
+	java -cp $(CLASS_DIR):$(JUNIT_JAR) org.joellercoaster.pork.test.JUnit
 

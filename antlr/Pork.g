@@ -24,7 +24,7 @@ from classfile import ACC_PUBLIC, ACC_FINAL, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
 from compiler import buildMethodBody, calculateLabelOffset
-from compiler import Instruction, Label, Symbol
+from compiler import Instruction, LabelRef, SymbolRef, FieldSymbol, FloatSymbol, IntegerSymbol, MethodSymbol, StringSymbol
 
 from PorkLexer import PorkLexer
 
@@ -85,42 +85,36 @@ classDef  : classLine constantLine* fieldLine* methodDef+ ;
 /* this will change! just getting method constants working to start with */
 /* FIXME */
 constantLine
-    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.index ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.index ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.index ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.index ; } )| (cf=classFloat { currentClassSymbols[$name.text] = $cf.index ; }));
+    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.symbol ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.symbol ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.symbol ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.symbol ; } )| (cf=classFloat { currentClassSymbols[$name.text] = $cf.symbol ; }));
 
-classMethod returns [index]
+classMethod returns [symbol]
     : c=className m=methodSignature lineEnd
     {
-        const = currentClass.methodConstant($c.text, $m.methodName, $m.methodDesc) ;
-        $index = [const >> 8 & 0xff, const & 0xff] ;
+        $symbol = MethodSymbol(currentClass, $c.text, $m.methodName, $m.methodDesc) ;
     };
 
-classField returns [index]
+classField returns [symbol]
     : c=className t=typeName w=WORD lineEnd
     {
-        const = currentClass.fieldConstant($c.text, $w.text, arrayDescriptor($t.desc, $t.arrayDim)) ;
-        $index = [const >> 8 & 0xff, const & 0xff] ;
+        $symbol = FieldSymbol(currentClass, $c.text, $w.text, arrayDescriptor($t.desc, $t.arrayDim)) ;
     };
 
-classInteger returns [index]
+classInteger returns [symbol]
     : i=integer lineEnd
     {
-        const = currentClass.integerConstant($i.intVal) ;
-        $index = [const & 0xff] ;
+        $symbol = IntegerSymbol(currentClass, $i.intVal);
     };
 
-classString returns [index]
+classString returns [symbol]
     : s=STRING_LITERAL lineEnd
     {
-        const = currentClass.stringConstant(s.text[1:-1]) ;
-        $index = [const & 0xff] ;
-
+        $symbol = StringSymbol(currentClass, s.text[1:-1]) ;
     };
 
-classFloat returns [index]
+classFloat returns [symbol]
     : f=float lineEnd
     {
-        const = currentClass.floatConstant($f.floatVal) ;
-        $index = [const & 0xff] ;
+        $symbol = FloatSymbol(currentClass, $f.floatVal);
     };
 
 /*
@@ -156,9 +150,8 @@ fieldLine returns [fieldName, fieldDesc, accessMask, val]
             attribs = [ConstantValue_attribute(currentClass, $t.desc, $val)] ;
 
         currentClass.field($f.text, $t.desc, $accessMask, attribs) ;
-        
-        const = currentClass.fieldConstant(currentClass.name, $f.text, $t.desc) ;
-        currentClassSymbols[$f.text] = [const >> 8 & 0xff, const & 0xff];
+        currentClassSymbols[$f.text] = FieldSymbol(currentClass, currentClass.name, $f.text, $t.desc);
+
     } ;
 
 methodLine returns [methodName, methodDesc, accessMask]
@@ -203,7 +196,7 @@ accessClause returns [mask]
 operation returns [op]
 @init { args = [] }
     : mnemonic=WORD
-      ((iarg=integer { args.append($iarg.intVal) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(Symbol($symb.name)) ; }) | (la=labelref { args.append(Label($la.name)) ; }) )* 
+      ((iarg=integer { args.append($iarg.intVal) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(SymbolRef($symb.name)) ; }) | (la=labelref { args.append(LabelRef($la.name)) ; }) )* 
       lineEnd { $op = Instruction($mnemonic.text, args) ; } ;
 
 

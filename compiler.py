@@ -51,12 +51,59 @@ class UnknownLabel(UnknownSymbol):
 
 
 class Symbol(object):
+    def __init__(self, owningClass):
+        self.owningClass = owningClass
+
+# Now Symbols must be actually dereferenced to trigger creation of constant
+# entries in the classfile - therefore they need to be typed. When
+# dereferenced, they return the bytes appropriate to their index into the
+# constant pool.
+
+class ConstantSymbol(Symbol):
+
+    def __init__(self, owningClass, value):
+        Symbol.__init__(self, owningClass)
+        self.value = value
+
+class StringSymbol(ConstantSymbol):
+
+    def get(self):
+        return [self.owningClass.stringConstant(self.value) & 0xff]
+
+class IntegerSymbol(ConstantSymbol):
+
+    def get(self):
+        return [self.owningClass.integerConstant(self.value) & 0xff]
+
+class FloatSymbol(ConstantSymbol):
+
+    def get(self):
+        return [self.owningClass.floatConstant(self.value) & 0xff]
+
+# value is the method signature (or field desc)!
+class FieldSymbol(ConstantSymbol):
+
+    def __init__(self, owningClass, targetClassName, fieldName, typeDesc):
+        ConstantSymbol.__init__(self, owningClass, typeDesc)
+        self.fieldName = fieldName
+        self.targetClassName = targetClassName
+
+    def get(self):
+        const = self.owningClass.fieldConstant(self.targetClassName, self.fieldName, self.value)
+        return [const >> 8 & 0xff, const & 0xff] ;
+
+class MethodSymbol(FieldSymbol):
+
+    def get(self):
+        const = self.owningClass.methodConstant(self.targetClassName, self.fieldName, self.value)
+        return [const >> 8 & 0xff, const & 0xff] ;
+
+class SymbolRef(object):
     def __init__(self, name):
         self.name = name
 
-class Label(Symbol):
-    def __init__(self, name):
-        Symbol.__init__(self, name)
+class LabelRef(SymbolRef):
+    None
 
 
 class Instruction(object):
@@ -78,14 +125,14 @@ class Instruction(object):
         for arg in self.args:
 
             # TODO reconsider this, maybe just have local and global symbol tables
-            if isinstance(arg, Label):
+            if isinstance(arg, LabelRef):
 
                 if not labelTable.has_key(arg):
                     raise UnknownLabel(arg)
 
                 ret += u1(labelTable[arg])
 
-            elif isinstance(arg, Symbol):
+            elif isinstance(arg, SymbolRef):
 
                 name = arg.name
                 if not symbolTable.has_key(name):
@@ -130,7 +177,7 @@ def buildMethodBody(instructions, symbols, labels):
         newargs = []
         for arg in args:
 
-            if isinstance(arg, Label):
+            if isinstance(arg, LabelRef):
 
                 name = arg.name
 
@@ -154,7 +201,7 @@ def buildMethodBody(instructions, symbols, labels):
                 newargs.append(branchOffset      & 0xff)
 
  
-            elif isinstance(arg, Symbol):
+            elif isinstance(arg, SymbolRef):
 
                 name = arg.name
                 if not symbols.has_key(name):
@@ -164,7 +211,7 @@ def buildMethodBody(instructions, symbols, labels):
 
                     raise UnknownSymbol(name)
 
-                newargs += symbols[name]
+                newargs += symbols[name].get()
 
             else: # it's a byte literal
 
