@@ -1,0 +1,15 @@
+.class org.joellercoaster.pork.AccessModifiers ;
+
+.field private   static final int ONE = 1 ;
+.field protected static final int TWO = 2;
+
+.field private int someState ;
+
+.method protected static int getOne() ;
+
+.stack 1 ;
+.local 0 ;
+
+    getstatic $ONE ;
+    ireturn ;
+

@@ -63,9 +63,11 @@ T_LONG   : 'long'   ;
 T_SHORT  : 'short'  ;
 T_VOID   : 'void'   ;
 
-A_PUBLIC : 'public' ;
-A_STATIC : 'static' ;
-A_FINAL  : 'final'  ;
+A_PUBLIC    : 'public'    ;
+A_PROTECTED : 'protected' ;
+A_PRIVATE   : 'private'   ;
+A_STATIC    : 'static'    ;
+A_FINAL     : 'final'     ;
 
 WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
 

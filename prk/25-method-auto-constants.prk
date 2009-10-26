@@ -1,6 +1,6 @@
 .class org.joellercoaster.pork.MethodAutoConstant ;
 
-.method static int returnOne() ;
+.method private static int returnOne() ;
 
 .stack 1;
 .local 0;

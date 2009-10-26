@@ -20,7 +20,7 @@ import traceback
 
 from classfile import Code_attribute, ConstantValue_attribute, JavaClass
 from classfile import arrayDescriptor, fieldDescriptor, methodDescriptor
-from classfile import ACC_PUBLIC, ACC_FINAL, ACC_STATIC
+from classfile import ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_FINAL, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
 from compiler import buildMethodBody, calculateLabelOffset
@@ -193,7 +193,7 @@ typeName returns [desc, arrayDim]
 
 accessClause returns [mask]
 @init { $mask = 0; }
-    : ((A_STATIC { $mask |= ACC_STATIC ; }) | (A_PUBLIC { $mask |= ACC_PUBLIC ; }) | (A_FINAL { $mask |= ACC_FINAL ; }) )+ ; /* obviously more go here */
+    : ((A_STATIC { $mask |= ACC_STATIC ; }) | (A_PUBLIC { $mask |= ACC_PUBLIC ; }) | (A_FINAL { $mask |= ACC_FINAL ; }) | (A_PROTECTED { $mask |= ACC_PROTECTED ; }) | (A_PRIVATE { $mask |= ACC_PRIVATE ; }) )+ ; /* obviously more go here */
 
 
 operation returns [op]
