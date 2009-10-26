@@ -1,0 +1,18 @@
+.class org.joellercoaster.pork.MethodAutoConstant ;
+
+.method static int returnOne() ;
+
+.stack 1;
+.local 0;
+
+    iconst_1;
+    ireturn ;
+
+.method static int callReturnOne() ;
+
+.stack 1;
+.local 0;
+
+    invokestatic $returnOne;
+    ireturn ;
+

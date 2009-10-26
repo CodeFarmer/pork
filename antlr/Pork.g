@@ -126,7 +126,10 @@ methodDef returns [meth]
     operations = [] ;
     labels = {} ;
 }
-    : m=methodLine s=stackLine l=localLine ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+ { $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels))]) ; } ;
+    : m=methodLine s=stackLine l=localLine ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+ { 
+        $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels))]) ;
+        currentClassSymbols[$m.methodName] = MethodSymbol(currentClass, currentClass.name, $m.methodName, $m.methodDesc);
+    } ;
 
 stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
 localLine returns [size] : LOCAL s=integer lineEnd { $size = $s.intVal ; } ;
