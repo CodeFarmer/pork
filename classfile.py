@@ -523,6 +523,27 @@ class Code_attribute(object):
         for attribute in self.attributes:
             attribute.write(stream)
 
+class ExceptionTableEntry(object):
+
+    def __init__(self, owningClass, startPc, endPc, exceptionClassName, handlerPc):
+        
+        self.start_pc   = startPc
+        self.end_pc     = endPc
+        self.handler_pc = handlerPc
+        
+        if exceptionClassName == None:
+            self.catch_type = 0
+        else:
+            self.catch_type = owningClass.classConstant(exceptionClassName)
+
+    def write(self, stream):
+
+        stream.write(u2(self.start_pc))
+        stream.write(u2(self.end_pc))
+        stream.write(u2(self.handler_pc))
+        stream.write(u2(self.catch_type))
+
+
 # This is for static constant field initializers
 # http://java.sun.com/docs/books/jvms/second_edition/html/ClassFile.doc.html#1405
 
