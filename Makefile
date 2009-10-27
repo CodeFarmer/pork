@@ -12,23 +12,29 @@ JUNIT_JAR = $(JUNIT_HOME)/junit.jar
 
 JAVAC_OPTS=-d $(CLASS_DIR) -cp $(CLASS_DIR):$(JUNIT_JAR)
 
-clean : 
+clean: 
 	rm -rf *.pyc classes/org/ reference-classes/* *.tokens *Lexer.py Pork.py
 
-PorkLexer.py : $(ANTLR_DIR)/PorkLexer.g
+PorkLexer.py: $(ANTLR_DIR)/PorkLexer.g
 	$(ANTLR) $(ANTLR_OPTS) $(ANTLR_DIR)/PorkLexer.g
 
-Pork.py : $(ANTLR_DIR)/Pork.g PorkLexer.py
+Pork.py: $(ANTLR_DIR)/Pork.g PorkLexer.py
 	$(ANTLR) $(ANTLR_OPTS) $(ANTLR_DIR)/Pork.g
 
-parser : Pork.py
+parser: Pork.py
 	
-pork :
+pork:
 	python pjc.py prk/*.prk
 
-tests : pork
-	javac $(JAVAC_OPTS) java/org/joellercoaster/pork/*.java java/org/joellercoaster/pork/test/JUnit.java
+tests: pork
+	javac $(JAVAC_OPTS) test/java/org/joellercoaster/pork/*.java test/java/org/joellercoaster/pork/test/JUnit.java
 
-test : parser tests
+junit-tests: tests
 	java -cp $(CLASS_DIR):$(JUNIT_JAR) org.joellercoaster.pork.test.JUnit
+
+pyunit-tests:
+
+test: parser pyunit-tests junit-tests
+	for i in test/python/*.py ; do PYTHONPATH="$(PWD)" python $$i ; done
+
 

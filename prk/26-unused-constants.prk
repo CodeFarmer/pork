@@ -3,11 +3,15 @@
 .constant A 1 ;
 .constant B 2 ;
 
+.field static int fieldA ;
+.field static int fieldB ;
+
 .method static void doNothing() ;
 
 .stack 1 ;
 .local 0 ;
 
     ldc $A ;
+    getstatic $fieldA ;
     return ;
 
