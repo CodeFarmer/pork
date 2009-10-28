@@ -163,6 +163,10 @@ def calculateLabelOffset(name, instructionsSoFar):
     return offset;
    
 
+def buildExceptionTable(handlers, labels):
+
+    None
+
 
 def buildMethodBody(instructions, symbols, labels):
 

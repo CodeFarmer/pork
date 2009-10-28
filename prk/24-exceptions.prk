@@ -1,0 +1,21 @@
+.class org.joellercoaster.pork.Exceptions;
+
+
+.constant stringhash java.lang.String int hashCode() ;
+
+
+.method static void dereferenceNull() ;
+
+.stack 1 ;
+.local 0 ;
+
+.exception @start @finish java.lang.NullPointerException @handle ;
+
+start:
+    aconst_null ;
+    invokevirtual $stringhash;
+
+finish:
+
+handle:
+    return ;

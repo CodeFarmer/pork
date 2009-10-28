@@ -120,19 +120,25 @@ classFloat returns [symbol]
 /*
  * TODO: make stackLine and localLine optional, and either allow defaults, or
  * guess through static analysis
+ *
+ * FIXME implement x=ExceptionLine
  */
 methodDef returns [meth]
 @init { 
     operations = [] ;
     labels = {} ;
 }
-    : m=methodLine s=stackLine l=localLine ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+ { 
+    : m=methodLine s=stackLine l=localLine (x=exceptionLine {})* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+
+    { 
         $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels))]) ;
         currentClassSymbols[$m.methodName] = MethodSymbol(currentClass, currentClass.name, $m.methodName, $m.methodDesc);
     } ;
 
 stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
 localLine returns [size] : LOCAL s=integer lineEnd { $size = $s.intVal ; } ;
+
+/* FIXME IMPLEMENT ME */
+exceptionLine returns [handler] : EXCEPTION (integer | labelref) (integer | labelref) className (integer | labelref) lineEnd ;
 
 integer returns [intVal] : (s=HEX_INTEGER {$intVal = int($s.text, 16) ;}) | (s=DEC_INTEGER {$intVal = int($s.text, 10) ;}) ;
 
