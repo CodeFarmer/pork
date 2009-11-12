@@ -23,8 +23,8 @@ from classfile import arrayDescriptor, fieldDescriptor, methodDescriptor
 from classfile import ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_FINAL, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
-from compiler import buildMethodBody, calculateLabelOffset
-from compiler import Instruction, LabelRef, SymbolRef, FieldSymbol, FloatSymbol, IntegerSymbol, MethodSymbol, StringSymbol
+from compiler import buildExceptionTable, buildMethodBody, calculateLabelOffset
+from compiler import ExceptionDef, Instruction, LabelRef, SymbolRef, FieldSymbol, FloatSymbol, IntegerSymbol, MethodSymbol, StringSymbol
 
 from PorkLexer import PorkLexer
 
@@ -127,10 +127,11 @@ methodDef returns [meth]
 @init { 
     operations = [] ;
     labels = {} ;
+    exceptiondefs = [] ;
 }
-    : m=methodLine s=stackLine l=localLine (x=exceptionLine {})* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+
+    : m=methodLine s=stackLine l=localLine (x=exceptionLine { exceptiondefs.append($x.xdef) ; })* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+
     { 
-        $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels))]) ;
+        $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels), buildExceptionTable(exceptiondefs, labels))]) ;
         currentClassSymbols[$m.methodName] = MethodSymbol(currentClass, currentClass.name, $m.methodName, $m.methodDesc);
     } ;
 
@@ -138,7 +139,9 @@ stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
 localLine returns [size] : LOCAL s=integer lineEnd { $size = $s.intVal ; } ;
 
 /* FIXME IMPLEMENT ME */
-exceptionLine returns [handler] : EXCEPTION (integer | labelref) (integer | labelref) className (integer | labelref) lineEnd ;
+exceptionLine returns [xdef] : EXCEPTION s=integerOrLabelRef e=integerOrLabelRef throwableName=className t=integerOrLabelRef lineEnd { $xdef = ExceptionDef(currentClass, $s.thing, $e.thing, $throwableName.text, $t.thing) ; } ;
+
+integerOrLabelRef returns [thing] : (i=integer { $thing = $i.intVal ;} | l=labelref { $thing=$l.name ;}) ;
 
 integer returns [intVal] : (s=HEX_INTEGER {$intVal = int($s.text, 16) ;}) | (s=DEC_INTEGER {$intVal = int($s.text, 10) ;}) ;
 

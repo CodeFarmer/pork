@@ -4,6 +4,7 @@ import logging
 from logging import DEBUG, INFO, ERROR
 
 from bytes import u1
+from classfile import ExceptionTableEntry
 from jopcode import getOperation
 
 log = logging.getLogger('compiler')
@@ -36,6 +37,13 @@ class ArgumentException(Exception):
 
         return ret
 
+class InternalCompilerError(Exception):
+
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return name
 
 class UnknownSymbol(Exception):
 
@@ -152,6 +160,41 @@ class Instruction(object):
 
         return ret
 
+# shut up
+
+def getAbsoluteOrLabelOffset(labels, offset):
+
+    if isinstance(offset, int):
+        return offset
+    elif isinstance(offset, basestring):
+        if not labels.has_key(offset):
+            raise UnknownLabel(offset)
+        return labels[offset]
+
+    else:
+        raise InternalCompilerError('The compiler attempted to create an offset that was neither a label or an integer')
+
+class ExceptionDef(object):
+    
+    def __init__(self, owningClass, startThing, endThing, throwableClass, target):
+
+        if log.getEffectiveLevel() <= DEBUG:
+            log.debug('ExceptionDef(' + `owningClass` + ', ' + `startThing` + ', ' + `endThing` + ', ' + `throwableClass` + ', ' + `target` + ')') 
+        
+        self.owningClass = owningClass
+        self.startThing = startThing
+        self.endThing = endThing
+        self.throwableClass = throwableClass
+        self.target = target
+
+    def getExceptionTableEntry(self, labels):
+
+        return ExceptionTableEntry(self.owningClass,
+                                   getAbsoluteOrLabelOffset(labels, self.startThing),
+                                   getAbsoluteOrLabelOffset(labels, self.endThing),
+                                   self.throwableClass,
+                                   getAbsoluteOrLabelOffset(labels, self.target))
+
 # This is crude; FIXME
 def calculateLabelOffset(name, instructionsSoFar):
 
@@ -163,9 +206,9 @@ def calculateLabelOffset(name, instructionsSoFar):
     return offset;
    
 
-def buildExceptionTable(handlers, labels):
+def buildExceptionTable(defs, labels):
 
-    None
+    return map(lambda x: x.getExceptionTableEntry(labels), defs)
 
 
 def buildMethodBody(instructions, symbols, labels):
