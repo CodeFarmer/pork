@@ -41,7 +41,7 @@ class ExceptionsTest(TestCase):
 
     def testExceptionTableGenerated(self):
 
-        meth = findMethod(self.clazz, 'dereferenceNull')
+        meth = findMethod(self.clazz, 'dereferenceNullWithCatch')
 
         self.assertTrue(meth != None)
 

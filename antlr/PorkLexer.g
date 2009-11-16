@@ -5,13 +5,14 @@ options {
     filter=true;
 }
 
-CLASS     : '.class'     ;
-METHOD    : '.method'    ;
-FIELD     : '.field'     ;
-STACK     : '.stack'     ;
-LOCAL     : '.local'     ;
-CONSTANT  : '.constant'  ;
-EXCEPTION : '.exception' ;
+CLASS                : '.class'        ;
+METHOD               : '.method'       ;
+FIELD                : '.field'        ;
+STACK                : '.stack'        ;
+LOCAL                : '.local'        ;
+CONSTANT             : '.constant'     ;
+EXCEPTION            : '.exception'    ;
+COMPILE_LINE_NUMBERS : '.debuggerInfo' ;
 
 ARRAYDIM : '[]' ;
 
@@ -73,5 +74,4 @@ A_FINAL     : 'final'     ;
 WORD   : (LETTER | '_') (LETTER | '_' | DIGIT)* ;
 
 WHITESPACE : ( '\t' | '\r' | '\n' | ' ' | '\u000C' )+ { $channel = HIDDEN; } ;
-
 

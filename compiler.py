@@ -78,6 +78,13 @@ class StringSymbol(ConstantSymbol):
     def get(self):
         return [self.owningClass.stringConstant(self.value) & 0xff]
 
+
+class ClassSymbol(ConstantSymbol):
+
+    def get(self):
+        const = self.owningClass.classConstant(self.value)
+        return [const >> 8 & 0xff, const & 0xff]
+
 class IntegerSymbol(ConstantSymbol):
 
     def get(self):

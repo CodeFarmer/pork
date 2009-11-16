@@ -4,7 +4,7 @@
 .constant stringhash java.lang.String int hashCode() ;
 
 
-.method static void dereferenceNull() ;
+.method static void dereferenceNullWithCatch();
 
 .stack 1 ;
 .local 0 ;
@@ -16,6 +16,21 @@ start:
     invokevirtual $stringhash;
 
 finish:
+
+handle:
+    return ;
+
+
+.method static void dereferenceNullWithoutCatch() ;
+
+.stack 1 ;
+.local 0 ;
+
+start2:
+    aconst_null ;
+    invokevirtual $stringhash;
+
+finish2:
 
 handle:
     return ;

@@ -1,31 +1,50 @@
 .class org.joellercoaster.pork.LineNumbers ;
 
-.lineNumberTable ;
+.debuggerInfo ;
 
+.constant exceptionInit  java.lang.Exception void <init>(java.lang.String) ;
 .constant exceptionClass java.lang.Exception ;
-.constant exceptionInit  java.lang.Exception void <init>() ;
+
+.constant minusOne -1;
 
 .method static void countDownToZero(int) ;
 
+.stack 4 ;
 .local 1 ;
-.stack 0 ;
 
     iload_0 ;
-    dup     ;
+    dup ;
 
-    iflt @throw @start ;
-
-throw:
+    ifge @start ;
     
     new           $exceptionClass ;
-    aconst        "Arguments less than zero are a no-no." ;
+    dup           ;
+    ldc           "Arguments less than zero are a no-no." ;
     invokespecial $exceptionInit;
+
+    athrow;
 
 start:
 
-    iinc          -1 ;
-    ifeq          @ret @start;
+    iconst_1 ;
+
+    isub  ;
+    dup   ;
+    ifne          @start;
 
 ret:
+
+    return ;
+
+ .method public static void main(java.lang.String[]);
+
+ .stack 2;
+ .local 1;
+
+    iconst_5 ;
+    invokestatic $countDownToZero ;
+
+    ldc $minusOne ;
+    invokestatic $countDownToZero ;
 
     return ;

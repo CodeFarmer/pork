@@ -24,7 +24,7 @@ from classfile import ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_FINAL, ACC_STA
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
 from compiler import buildExceptionTable, buildMethodBody, calculateLabelOffset
-from compiler import ExceptionDef, Instruction, LabelRef, SymbolRef, FieldSymbol, FloatSymbol, IntegerSymbol, MethodSymbol, StringSymbol
+from compiler import ExceptionDef, Instruction, LabelRef, SymbolRef, ClassSymbol, FieldSymbol, FloatSymbol, IntegerSymbol, MethodSymbol, StringSymbol
 
 from PorkLexer import PorkLexer
 
@@ -41,6 +41,8 @@ def dump(o):
 classDefs = {}
 currentClass = None
 currentClassSymbols = None
+
+compileLineNumbers = False
 
 def classDef(className):
 
@@ -80,12 +82,20 @@ def writeClasses():
 }
 
 porkfile  : classDef+ ;
-classDef  : classLine constantLine* fieldLine* methodDef+ ;
+classDef  : classLine lineNumberPragma? constantLine* fieldLine* methodDef+ ;
+
+lineNumberPragma: COMPILE_LINE_NUMBERS lineEnd { compileLineNumbers = True ; } ;
 
 /* this will change! just getting method constants working to start with */
 /* FIXME */
 constantLine
-    : CONSTANT name=WORD ((cm=classMethod { currentClassSymbols[$name.text] = $cm.symbol ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.symbol ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.symbol ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.symbol ; } )| (cf=classFloat { currentClassSymbols[$name.text] = $cf.symbol ; }));
+    : CONSTANT name=WORD ((cc=classClass {currentClassSymbols[$name.text] = $cc.symbol ; } ) | (cm=classMethod { currentClassSymbols[$name.text] = $cm.symbol ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.symbol ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.symbol ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.symbol ; } )| (cf=classFloat { currentClassSymbols[$name.text] = $cf.symbol ; }));
+
+classClass returns [symbol]
+    : c=className lineEnd
+    {
+        $symbol = ClassSymbol(currentClass, $c.text);
+    };
 
 classMethod returns [symbol]
     : c=className m=methodSignature lineEnd
@@ -205,11 +215,16 @@ accessClause returns [mask]
     : ((A_STATIC { $mask |= ACC_STATIC ; }) | (A_PUBLIC { $mask |= ACC_PUBLIC ; }) | (A_FINAL { $mask |= ACC_FINAL ; }) | (A_PROTECTED { $mask |= ACC_PROTECTED ; }) | (A_PRIVATE { $mask |= ACC_PRIVATE ; }) )+ ; /* obviously more go here */
 
 
+/* TODO this is where the line number logic gets plumbed in, when it's in classfile */
 operation returns [op]
 @init { args = [] }
     : mnemonic=WORD
-      ((iarg=integer { args.append($iarg.intVal) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(SymbolRef($symb.name)) ; }) | (la=labelref { args.append(LabelRef($la.name)) ; }) )* 
-      lineEnd { $op = Instruction($mnemonic.text, args) ; } ;
+      ((iarg=integer { args.append($iarg.intVal) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(SymbolRef($symb.name)) ; }) | (la=labelref { args.append(LabelRef($la.name)) ; }) )*  lineEnd 
+      { 
+          $op = Instruction($mnemonic.text, args) ;
+          if compileLineNumbers:
+              None 
+      } ;
 
 
 /* FIXME write a proper error message for this */
