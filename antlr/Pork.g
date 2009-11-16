@@ -84,12 +84,17 @@ def writeClasses():
 porkfile  : classDef+ ;
 classDef  : classLine lineNumberPragma? constantLine* fieldLine* methodDef+ ;
 
-lineNumberPragma: COMPILE_LINE_NUMBERS lineEnd { compileLineNumbers = True ; } ;
+lineNumberPragma: COMPILE_LINE_NUMBERS lineEnd { global compileLineNumbers ; compileLineNumbers = True ; } ;
 
 /* this will change! just getting method constants working to start with */
 /* FIXME */
 constantLine
-    : CONSTANT name=WORD ((cc=classClass {currentClassSymbols[$name.text] = $cc.symbol ; } ) | (cm=classMethod { currentClassSymbols[$name.text] = $cm.symbol ; }) | (cf=classField { currentClassSymbols[$name.text] = $cf.symbol ; }) | (ci=classInteger { currentClassSymbols[$name.text] = $ci.symbol ; }) | (cs=classString { currentClassSymbols[$name.text] = $cs.symbol ; } )| (cf=classFloat { currentClassSymbols[$name.text] = $cf.symbol ; }));
+    : CONSTANT name=WORD ((cc=classClass {currentClassSymbols[$name.text] = $cc.symbol ; } ) 
+                        | (cm=classMethod { currentClassSymbols[$name.text] = $cm.symbol ; }) 
+                        | (cf=classField { currentClassSymbols[$name.text] = $cf.symbol ; }) 
+                        | (ci=classInteger { currentClassSymbols[$name.text] = $ci.symbol ; }) 
+                        | (cs=classString { currentClassSymbols[$name.text] = $cs.symbol ; } )
+                        | (cf=classFloat { currentClassSymbols[$name.text] = $cf.symbol ; }));
 
 classClass returns [symbol]
     : c=className lineEnd
@@ -138,8 +143,9 @@ methodDef returns [meth]
     operations = [] ;
     labels = {} ;
     exceptiondefs = [] ;
+    lineNumberTable = {} ;
 }
-    : m=methodLine s=stackLine l=localLine (x=exceptionLine { exceptiondefs.append($x.xdef) ; })* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { operations.append($op.op) ; } ))+
+    : m=methodLine s=stackLine l=localLine (x=exceptionLine { exceptiondefs.append($x.xdef) ; })* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { lineNumberTable[$op.line] = calculateLabelOffset(None, operations) ; operations.append($op.op) ; } ))+
     { 
         $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels), buildExceptionTable(exceptiondefs, labels))]) ;
         currentClassSymbols[$m.methodName] = MethodSymbol(currentClass, currentClass.name, $m.methodName, $m.methodDesc);
@@ -215,12 +221,12 @@ accessClause returns [mask]
     : ((A_STATIC { $mask |= ACC_STATIC ; }) | (A_PUBLIC { $mask |= ACC_PUBLIC ; }) | (A_FINAL { $mask |= ACC_FINAL ; }) | (A_PROTECTED { $mask |= ACC_PROTECTED ; }) | (A_PRIVATE { $mask |= ACC_PRIVATE ; }) )+ ; /* obviously more go here */
 
 
-/* TODO this is where the line number logic gets plumbed in, when it's in classfile */
-operation returns [op]
+operation returns [op, line]
 @init { args = [] }
     : mnemonic=WORD
       ((iarg=integer { args.append($iarg.intVal) ; }) | (arg=STRING_LITERAL { args.append(currentClass.stringConstant($arg.text[1:-1])) ; }) | (symb=symbolref { args.append(SymbolRef($symb.name)) ; }) | (la=labelref { args.append(LabelRef($la.name)) ; }) )*  lineEnd 
       { 
+          $line = $mnemonic.line ;
           $op = Instruction($mnemonic.text, args) ;
           if compileLineNumbers:
               None 
