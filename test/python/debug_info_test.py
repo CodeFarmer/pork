@@ -19,6 +19,24 @@ def getSourceFileAttribute(clazz):
 
     return None
 
+# FIXME these are in multiple tests, write a superclass
+def findMethod(clazz, name):
+
+    for m in clazz.methods:
+        if clazz.constant_pool[m.name_index - 1].value == name:
+            return m
+
+    return None
+
+def getCodeAttribute(method):
+
+    for attr in method.attributes:
+        if isinstance(attr, Code_attribute):
+            return attr
+
+    return None
+
+
 SOURCE_FILE = '33-line-number-tables.prk'
 
 def DebugInfotest(TestCase):
@@ -43,9 +61,16 @@ def DebugInfotest(TestCase):
 
         except:
             None
-            
-        
 
+    def testLineNumberInfoGenerated(self):
+
+        code = getCodeAttribute(findMethod(self.clazz, 'countDownToZero'))
+        for attr in code.attributes:
+            if isinstance(attr, LineNumberTable_attribute):
+                return
+
+        self.fail('Codee attribute for countDownToZero() did not itself have a line number table attribute')
+            
 
 if __name__ == '__main__':
     unittest.main()

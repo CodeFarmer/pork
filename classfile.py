@@ -54,10 +54,11 @@ CONSTANT_Double             =  6
 CONSTANT_NameAndType        = 12
 CONSTANT_Utf8               =  1
 
-ATTR_CODE           = 'Code'
-ATTR_CONSTANT_VALUE = 'ConstantValue'
+ATTR_CODE              = 'Code'
+ATTR_CONSTANT_VALUE    = 'ConstantValue'
 
-ATTR_SOURCE_FILE    = 'SourceFile'
+ATTR_SOURCE_FILE       = 'SourceFile'
+ATTR_LINE_NUMBER_TABLE = 'LineNumberTable'
 
 
 log = logging.getLogger('classfile')
@@ -506,6 +507,26 @@ class SourceFile_attribute(object):
         stream.write(u4(SOURCE_FILE_ATTRIBUTE_LENGTH))
         stream.write(u2(this.sourcefile_index))
 
+
+SIZE_OF_LINE_NUMBER_TABLE_ENTRY = 4 # bytes
+
+class LineNumberTable_attribute(object):
+
+    # lineNumberTable is an iterable of (start_pc, line_number) pairs
+    def __init__(self, owningClass, lineNumberTable):
+
+        self.attribute_name_index = owningClass.utf8Constant(ATTR_LINE_NUMBER_TABLE)
+        self.line_number_table = lineNumberTable
+
+    def write(self, stream):
+        stream.write(u2(self.attribute_name_index))
+        stream.write(u4(len(self.line_number_table) * SIZE_OF_LINE_NUMBER_TABLE_ENTRY + 8))
+
+        stream.write(u2(len(self.line_number_table)))
+
+        for entry in line_number_table:
+            stream.write(u2(entry[0]))
+            stream.write(u2(entry[1]))
 
 SIZE_OF_EXCEPTION_TABLE_ENTRY = 8
 
