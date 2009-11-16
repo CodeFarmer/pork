@@ -8,7 +8,7 @@ from antlr3 import ANTLRInputStream, CommonTokenStream
 from PorkLexer import PorkLexer
 from Pork import Pork, classDefs
 
-from classfile import SourceFile_attribute
+from classfile import SourceFile_attribute, Code_attribute
 
 
 def getSourceFileAttribute(clazz):
@@ -37,9 +37,9 @@ def getCodeAttribute(method):
     return None
 
 
-SOURCE_FILE = '33-line-number-tables.prk'
+SOURCE_FILE = 'prk/33-line-number-tables.prk'
 
-def DebugInfotest(TestCase):
+class DebugInfotest(TestCase):
 
     def setUp(self):
 
@@ -69,7 +69,7 @@ def DebugInfotest(TestCase):
             if isinstance(attr, LineNumberTable_attribute):
                 return
 
-        self.fail('Codee attribute for countDownToZero() did not itself have a line number table attribute')
+        self.fail('Code attribute for countDownToZero() did not itself have a line number table attribute')
             
 
 if __name__ == '__main__':
