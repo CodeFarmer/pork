@@ -145,7 +145,7 @@ methodDef returns [meth]
     exceptiondefs = [] ;
     lineNumberTable = {} ;
 }
-    : m=methodLine s=stackLine l=localLine (x=exceptionLine { exceptiondefs.append($x.xdef) ; })* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { lineNumberTable[$op.line] = calculateLabelOffset(None, operations) ; operations.append($op.op) ; } ))+
+    : m=methodLine s=stackLine l=localLine (x=exceptionLine { exceptiondefs.append($x.xdef) ; })* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { print 'OP: ' + `op.line` ; lineNumberTable[$op.line] = calculateLabelOffset(None, operations) ; operations.append($op.op) ; } ))+
     { 
         $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels), buildExceptionTable(exceptiondefs, labels))]) ;
         currentClassSymbols[$m.methodName] = MethodSymbol(currentClass, currentClass.name, $m.methodName, $m.methodDesc);
