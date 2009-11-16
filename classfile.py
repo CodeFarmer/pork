@@ -57,6 +57,8 @@ CONSTANT_Utf8               =  1
 ATTR_CODE           = 'Code'
 ATTR_CONSTANT_VALUE = 'ConstantValue'
 
+ATTR_SOURCE_FILE    = 'SourceFile'
+
 
 log = logging.getLogger('classfile')
 log.setLevel(INFO)
@@ -140,7 +142,16 @@ class JavaClass(object):
         self.methods = []
         self.attributes = []
 
+    def setSourceFile(self, sourceFile):
+        
+        for attr in self.attributes:
+            if isinstance(attr, SourceFile_attribute):
+                raise ClassFormatException('Attempted to set a SourceFile attribute on a class that already has one (' + attr.sourceFile + '): ' + sourceFile)
+
+        self.attributes.append(SourceFile_attribute(self, sourceFile))
+
     # the next methods are to ensure reuse of constant values
+
     def utf8Constant(self, value):
 
         index = 0
@@ -478,6 +489,22 @@ class attrib_info(object):
         stream.write(u4(len(self.info)))
         stream.write(self.info)
 
+
+SOURCE_FILE_ATTRIBUTE_LENGTH = 2
+
+class SourceFile_attribute(object):
+    
+    def __init__(self, owningClass, sourceFile):
+
+        this.sourceFile = sourceFile
+        this.attribute_name_index = owningClass.utf8Constant(ATTR_SOURCE_FILE)
+        this.sourcefile_index     = owningClass.utf8Constant(sourceFile)
+
+    def write(self, stream):
+
+        stream.write(u2(this.attribute_name_index))
+        stream.write(u4(SOURCE_FILE_ATTRIBUTE_LENGTH))
+        stream.write(u2(this.sourcefile_index))
 
 
 SIZE_OF_EXCEPTION_TABLE_ENTRY = 8
