@@ -43,11 +43,17 @@ class DebugInfotest(TestCase):
 
     def setUp(self):
 
+        # this is crap a sign that bug #31 is on the money
+        classDefs.clear()
+
         lexer = PorkLexer(ANTLRInputStream(open(SOURCE_FILE)))
         parser = Pork(CommonTokenStream(lexer))
         parser.porkfile()
 
         self.clazz = classDefs['org.joellercoaster.pork.LineNumbers']
+        self.clazz.setSourceFile(SOURCE_FILE)
+
+
 
     def testClassFileAttributeSetting(self):
 

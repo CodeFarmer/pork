@@ -497,9 +497,9 @@ class SourceFile_attribute(object):
     
     def __init__(self, owningClass, sourceFile):
 
-        this.sourceFile = sourceFile
-        this.attribute_name_index = owningClass.utf8Constant(ATTR_SOURCE_FILE)
-        this.sourcefile_index     = owningClass.utf8Constant(sourceFile)
+        self.sourceFile = sourceFile
+        self.attribute_name_index = owningClass.utf8Constant(ATTR_SOURCE_FILE)
+        self.sourcefile_index     = owningClass.utf8Constant(sourceFile)
 
     def write(self, stream):
 
