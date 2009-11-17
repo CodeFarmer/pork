@@ -4,7 +4,9 @@ import logging
 from logging import DEBUG, INFO, ERROR
 
 from bytes import u1
-from classfile import ExceptionTableEntry
+
+from classfile import Code_attribute, ExceptionTableEntry
+
 from jopcode import getOperation
 
 log = logging.getLogger('compiler')
@@ -291,4 +293,18 @@ def buildMethodBody(instructions, symbols, labels):
         ret += instruction.byteString()
 
     return ret
+
+def buildMethod(owningClass, methodName, methodDesc, accessMask, stackSize, localSize, operations, symbols, labels, exceptionDefs):
+
+    exceptionTable = buildExceptionTable(exceptionDefs, labels)
+    methodBody     = buildMethodBody(operations, symbols, labels)
+
+    meth = owningClass.method(methodName, 
+                              methodDesc,
+                              accessMask,
+                              [Code_attribute(owningClass, stackSize, localSize, methodBody, exceptionTable)]) ;
+       
+    symbols[methodName] = MethodSymbol(owningClass, owningClass.name, methodName, methodDesc);
+
+    return meth
 

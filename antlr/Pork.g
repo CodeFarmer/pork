@@ -18,12 +18,12 @@ import os
 import sys
 import traceback
 
-from classfile import Code_attribute, ConstantValue_attribute, JavaClass
+from classfile import ConstantValue_attribute, JavaClass
 from classfile import arrayDescriptor, fieldDescriptor, methodDescriptor
 from classfile import ACC_PUBLIC, ACC_PRIVATE, ACC_PROTECTED, ACC_FINAL, ACC_STATIC
 from classfile import DESC_BOOLEAN, DESC_BYTE, DESC_CHAR, DESC_DOUBLE, DESC_FLOAT, DESC_INT, DESC_LONG, DESC_SHORT, DESC_VOID
 
-from compiler import buildExceptionTable, buildMethodBody, calculateLabelOffset
+from compiler import buildMethod, calculateLabelOffset
 from compiler import ExceptionDef, Instruction, LabelRef, SymbolRef, ClassSymbol, FieldSymbol, FloatSymbol, IntegerSymbol, MethodSymbol, StringSymbol
 
 from PorkLexer import PorkLexer
@@ -142,13 +142,17 @@ methodDef returns [meth]
 @init { 
     operations = [] ;
     labels = {} ;
-    exceptiondefs = [] ;
+    exceptionDefs = [] ;
     lineNumberTable = {} ;
 }
-    : m=methodLine s=stackLine l=localLine (x=exceptionLine { exceptiondefs.append($x.xdef) ; })* ((la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )| (op=operation { print 'OP: ' + `op.line` ; lineNumberTable[$op.line] = calculateLabelOffset(None, operations) ; operations.append($op.op) ; } ))+
-    { 
-        $meth = currentClass.method($m.methodName, $m.methodDesc, $m.accessMask, [Code_attribute(currentClass, $s.size, $l.size, buildMethodBody(operations, currentClassSymbols, labels), buildExceptionTable(exceptiondefs, labels))]) ;
-        currentClassSymbols[$m.methodName] = MethodSymbol(currentClass, currentClass.name, $m.methodName, $m.methodDesc);
+    : m=methodLine
+      s=stackLine
+      l=localLine
+      (x=exceptionLine { exceptionDefs.append($x.xdef) ; })*
+      ( (la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )
+       |(op=operation {  lineNumberTable[$op.line] = calculateLabelOffset(None, operations) ; operations.append($op.op) ; } ))+
+    {
+        $meth = buildMethod(currentClass, $m.methodName, $m.methodDesc, $m.accessMask, $s.size, $l.size, operations, currentClassSymbols, labels, exceptionDefs)    
     } ;
 
 stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;
