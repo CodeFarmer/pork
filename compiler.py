@@ -5,7 +5,7 @@ from logging import DEBUG, INFO, ERROR
 
 from bytes import u1
 
-from classfile import Code_attribute, ExceptionTableEntry
+from classfile import Code_attribute, ExceptionTableEntry, LineNumberTable_attribute
 
 from jopcode import getOperation
 
@@ -294,15 +294,24 @@ def buildMethodBody(instructions, symbols, labels):
 
     return ret
 
-def buildMethod(owningClass, methodName, methodDesc, accessMask, stackSize, localSize, operations, symbols, labels, exceptionDefs):
+def buildMethod(owningClass, methodName, methodDesc, accessMask, stackSize, localSize, operations, symbols, labels, exceptionDefs, lineNumberTable, compileLineNumbers):
 
     exceptionTable = buildExceptionTable(exceptionDefs, labels)
     methodBody     = buildMethodBody(operations, symbols, labels)
 
+    codeAttributeAttributes = []
+
+    if compileLineNumbers:
+        lineNumberPairs = []
+        for key in lineNumberTable.keys():
+            lineNumberPairs.append((lineNumberTable[key], key))
+
+        codeAttributeAttributes = [LineNumberTable_attribute(owningClass, lineNumberPairs)]
+
     meth = owningClass.method(methodName, 
                               methodDesc,
                               accessMask,
-                              [Code_attribute(owningClass, stackSize, localSize, methodBody, exceptionTable)]) ;
+                              [Code_attribute(owningClass, stackSize, localSize, methodBody, exceptionTable, codeAttributeAttributes)]) ;
        
     symbols[methodName] = MethodSymbol(owningClass, owningClass.name, methodName, methodDesc);
 

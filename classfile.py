@@ -517,16 +517,18 @@ class LineNumberTable_attribute(object):
 
         self.attribute_name_index = owningClass.utf8Constant(ATTR_LINE_NUMBER_TABLE)
         self.line_number_table = lineNumberTable
+        self.size = (len(lineNumberTable) * SIZE_OF_LINE_NUMBER_TABLE_ENTRY) + 8
 
     def write(self, stream):
         stream.write(u2(self.attribute_name_index))
-        stream.write(u4(len(self.line_number_table) * SIZE_OF_LINE_NUMBER_TABLE_ENTRY + 8))
+        stream.write(u4(self.size - 6))
 
         stream.write(u2(len(self.line_number_table)))
 
-        for entry in line_number_table:
+        for entry in self.line_number_table:
             stream.write(u2(entry[0]))
             stream.write(u2(entry[1]))
+
 
 SIZE_OF_EXCEPTION_TABLE_ENTRY = 8
 
@@ -544,7 +546,8 @@ class Code_attribute(object):
         # Size of max_stack, max_locals, code_length, exception_table_length,
         # attributes_count = 12.
         # Size of attribute.name_index, length = 6
-        self.attribute_length = len(code) + SIZE_OF_EXCEPTION_TABLE_ENTRY * len (exception_table) + reduce(lambda x, y: x + len(y.info) + 6, attributes, 0) + 12
+        # attributes that go on a code attribute must now support size member
+        self.attribute_length = len(code) + SIZE_OF_EXCEPTION_TABLE_ENTRY * len (exception_table) + reduce(lambda x, y: x + y.size, attributes, 0) + 12
 
         self.max_stack       = max_stack
         self.max_locals      = max_locals

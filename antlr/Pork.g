@@ -152,7 +152,7 @@ methodDef returns [meth]
       ( (la=label { labels[$la.name] = calculateLabelOffset($la.name, operations) ; } )
        |(op=operation {  lineNumberTable[$op.line] = calculateLabelOffset(None, operations) ; operations.append($op.op) ; } ))+
     {
-        $meth = buildMethod(currentClass, $m.methodName, $m.methodDesc, $m.accessMask, $s.size, $l.size, operations, currentClassSymbols, labels, exceptionDefs)    
+        $meth = buildMethod(currentClass, $m.methodName, $m.methodDesc, $m.accessMask, $s.size, $l.size, operations, currentClassSymbols, labels, exceptionDefs, lineNumberTable, compileLineNumbers)    
     } ;
 
 stackLine returns [size] : STACK s=integer lineEnd { $size = $s.intVal ; } ;

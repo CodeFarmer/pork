@@ -8,7 +8,7 @@ from antlr3 import ANTLRInputStream, CommonTokenStream
 from PorkLexer import PorkLexer
 from Pork import Pork, classDefs
 
-from classfile import SourceFile_attribute, Code_attribute
+from classfile import SourceFile_attribute, Code_attribute, LineNumberTable_attribute
 
 
 def getSourceFileAttribute(clazz):
