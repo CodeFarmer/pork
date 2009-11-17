@@ -503,9 +503,9 @@ class SourceFile_attribute(object):
 
     def write(self, stream):
 
-        stream.write(u2(this.attribute_name_index))
+        stream.write(u2(self.attribute_name_index))
         stream.write(u4(SOURCE_FILE_ATTRIBUTE_LENGTH))
-        stream.write(u2(this.sourcefile_index))
+        stream.write(u2(self.sourcefile_index))
 
 
 SIZE_OF_LINE_NUMBER_TABLE_ENTRY = 4 # bytes
@@ -526,6 +526,8 @@ class LineNumberTable_attribute(object):
         stream.write(u2(len(self.line_number_table)))
 
         for entry in self.line_number_table:
+
+            log.info('line number pair ' + `entry`)
             stream.write(u2(entry[0]))
             stream.write(u2(entry[1]))
 
